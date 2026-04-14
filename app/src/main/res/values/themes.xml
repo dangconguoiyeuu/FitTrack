@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FitTrack" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorPrimaryDark">#000000</item>
+        <item name="colorAccent">#333333</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>

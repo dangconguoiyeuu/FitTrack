@@ -1,0 +1,86 @@
+[
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_splash.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_splash.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_history.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_history.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_circle_small_black.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/circle_small_black.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_login.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_register.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_register.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_circle_border.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/circle_border.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_bg_dialog.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/bg_dialog.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_card_selected.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/card_selected.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_home.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_home.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_border_rounded.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/border_rounded.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_bg_warning.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/bg_warning.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_circle_border_thin.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/circle_border_thin.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_item_history.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/item_history.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_bmi_result.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_bmi_result.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_exercise.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_exercise.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_profile.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_profile.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/layout_activity_setup.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/layout/activity_setup.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/drawable_card_unselected.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/drawable/card_unselected.xml"
+    },
+    {
+        "merged": "com.fitness.fittrack.app-debug-47:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.fitness.fittrack.app-main-49:/mipmap-anydpi-v26/ic_launcher.xml"
+    }
+]

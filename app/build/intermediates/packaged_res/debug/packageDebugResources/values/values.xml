@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#000000</color>
+    <string name="app_name">FitTrack</string>
+    <string name="gcm_defaultSenderId" translatable="false">888714058722</string>
+    <string name="google_api_key" translatable="false">AIzaSyBcNTEHL735z91nNIjmSSmJncyJvYH7f6k</string>
+    <string name="google_app_id" translatable="false">1:888714058722:android:8cc0cb5934e0f103e977bb</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBcNTEHL735z91nNIjmSSmJncyJvYH7f6k</string>
+    <string name="google_storage_bucket" translatable="false">fittrack-fae2f.firebasestorage.app</string>
+    <string name="project_id" translatable="false">fittrack-fae2f</string>
+    <style name="Theme.FitTrack" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorPrimaryDark">#000000</item>
+        <item name="colorAccent">#333333</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>
