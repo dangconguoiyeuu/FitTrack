@@ -1,5 +1,6 @@
 package com.fitness.fittrack.activities;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fitness.fittrack.R;
 import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.models.WorkoutSession;
+import com.fitness.fittrack.services.ForegroundService;
 import com.fitness.fittrack.utils.FirebaseHelper;
 
 /**
@@ -45,9 +47,23 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private final Runnable ticker = new Runnable() {
         public void run() {
             elapsed = (SystemClock.elapsedRealtime() - startTime) / 1000;
-            long h=elapsed/3600, m=(elapsed%3600)/60, s=elapsed%60;
-            tvTime.setText(h>0 ? String.format("%02d:%02d:%02d",h,m,s) : String.format("%02d:%02d",m,s));
-            tvCalo.setText((int)User.estimateCalories(type, count, elapsed, userWeight) + " kcal");
+            long h = elapsed / 3600, m = (elapsed % 3600) / 60, s = elapsed % 60;
+            String timeStr = h > 0 ? String.format("%02d:%02d:%02d", h, m, s) : String.format("%02d:%02d", m, s);
+            String caloStr = (int) User.estimateCalories(type, count, elapsed, userWeight) + " kcal";
+
+            tvTime.setText(timeStr);
+            tvCalo.setText(caloStr);
+
+            // BẮN DỮ LIỆU SANG SERVICE ĐỂ CẬP NHẬT LÊN MÀN HÌNH KHÓA MỖI GIÂY
+            try {
+                Intent intent = new Intent(ExerciseActivity.this, ForegroundService.class);
+                intent.putExtra("steps", count + " " + tvUnit.getText().toString());
+                intent.putExtra("time", timeStr);
+                intent.putExtra("calo", caloStr);
+                androidx.core.content.ContextCompat.startForegroundService(ExerciseActivity.this, intent);
+            } catch (Exception ignored) {
+            }
+
             handler.postDelayed(this, 1000);
         }
     };
@@ -75,8 +91,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private ToneGenerator tone;
     private Vibrator vibrator;
 
-    @Override protected void onCreate(Bundle b) {
-        super.onCreate(b); setContentView(R.layout.activity_exercise);
+    @Override
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        setContentView(R.layout.activity_exercise);
 
         type = getIntent().getStringExtra("type");
         target = getIntent().getIntExtra("target", 30);
@@ -94,7 +112,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
-        switch(type) {
+        switch (type) {
             case "pushup":
                 tvTitle.setText("Dang tap : Chong day");
                 tvUnit.setText("Lan");
@@ -113,7 +131,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
 
         tvTarget.setText("/ " + target);
-        if (sensor == null) { Toast.makeText(this, "Sensor khong kha dung!", Toast.LENGTH_LONG).show(); }
+        if (sensor == null) {
+            Toast.makeText(this, "Sensor khong kha dung!", Toast.LENGTH_LONG).show();
+        }
 
         // Load user weight
         String uid = FirebaseHelper.getInstance().getUid();
@@ -130,7 +150,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     }
 
     private void startExercise() {
-        active = true; count = 0;
+        active = true;
+        count = 0;
         tvCount.setText("0");
         tvStatus.setText("Dang bat nhip chuyen dong");
 
@@ -148,7 +169,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tvStatus.setText("Nhip hop le!");
 
         // Am thanh beep
-        try { tone.startTone(ToneGenerator.TONE_PROP_BEEP, 100); } catch(Exception e) {}
+        try {
+            tone.startTone(ToneGenerator.TONE_PROP_BEEP, 100);
+        } catch (Exception e) {
+        }
 
         // Kiem tra hoan thanh muc tieu
         if (count >= target) {
@@ -158,29 +182,36 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 currentSet++;
                 count = 0;
                 tvCount.setText("0");
-                Toast.makeText(this, "Hoan thanh set " + (currentSet-1) + "! Nghi 30s...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Hoan thanh set " + (currentSet - 1) + "! Nghi 30s...", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    @Override public void onSensorChanged(SensorEvent e) {
+    @Override
+    public void onSensorChanged(SensorEvent e) {
         if (!active) return;
 
-        switch(type) {
+        switch (type) {
             case "running":
                 if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
-                float mag = (float)Math.sqrt(e.values[0]*e.values[0]+e.values[1]*e.values[1]+e.values[2]*e.values[2]);
-                if (mag > 11.5f && !peakDetected) { peakDetected = true; onValidRep(); }
-                else if (mag < 9.0f) peakDetected = false;
+                float mag = (float) Math.sqrt(e.values[0] * e.values[0] + e.values[1] * e.values[1] + e.values[2] * e.values[2]);
+                if (mag > 11.5f && !peakDetected) {
+                    peakDetected = true;
+                    onValidRep();
+                } else if (mag < 9.0f) peakDetected = false;
                 break;
 
             case "pushup":
                 if (e.sensor.getType() != Sensor.TYPE_PROXIMITY) return;
                 float dist = e.values[0];
-                if (dist < sensor.getMaximumRange()) { isNear = true; }
-                else if (isNear) {
+                if (dist < sensor.getMaximumRange()) {
+                    isNear = true;
+                } else if (isNear) {
                     long now = SystemClock.elapsedRealtime();
-                    if (now - lastPushTime > 500) { onValidRep(); lastPushTime = now; }
+                    if (now - lastPushTime > 500) {
+                        onValidRep();
+                        lastPushTime = now;
+                    }
                     isNear = false;
                 }
                 break;
@@ -189,7 +220,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
                 float z = Math.abs(e.values[2]);
                 if (isLying && z < 3.5f) isLying = false;
-                else if (!isLying && z > 6.5f) { onValidRep(); isLying = true; }
+                else if (!isLying && z > 6.5f) {
+                    onValidRep();
+                    isLying = true;
+                }
                 break;
         }
     }
@@ -205,22 +239,23 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         if (vibrator != null) vibrator.vibrate(500);
 
         new AlertDialog.Builder(this)
-            .setTitle("Tam dung tap luyen")
-            .setMessage("He thong khong nhan dien duoc chuyen dong trong 20s qua.\nBan co muon ket thuc som khong?")
-            .setCancelable(false)
-            .setPositiveButton("Tiep tuc tap luyen", (d, w) -> {
-                dialogShowing = false;
-                active = true;
-                if (sensor != null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-                lastRepTime = SystemClock.elapsedRealtime();
-                handler.postDelayed(ticker, 0);
-                handler.postDelayed(inactivityCheck, 20000);
-            })
-            .setNegativeButton("Ket thuc & Luu ket qua", (d, w) -> {
-                dialogShowing = false;
-                finishExercise();
-            })
-            .show();
+                .setTitle("Tam dung tap luyen")
+                .setMessage("He thong khong nhan dien duoc chuyen dong trong 20s qua.\nBan co muon ket thuc som khong?")
+                .setCancelable(false)
+                .setPositiveButton("Tiep tuc tap luyen", (d, w) -> {
+                    dialogShowing = false;
+                    active = true;
+                    if (sensor != null)
+                        sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+                    lastRepTime = SystemClock.elapsedRealtime();
+                    handler.postDelayed(ticker, 0);
+                    handler.postDelayed(inactivityCheck, 20000);
+                })
+                .setNegativeButton("Ket thuc & Luu ket qua", (d, w) -> {
+                    dialogShowing = false;
+                    finishExercise();
+                })
+                .show();
     }
 
     private void finishExercise() {
@@ -228,6 +263,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         sm.unregisterListener(this);
         handler.removeCallbacks(ticker);
         handler.removeCallbacks(inactivityCheck);
+        try {
+            Intent stopIntent = new Intent(this, ForegroundService.class);
+            stopIntent.setAction("STOP");
+            startService(stopIntent);
+        } catch (Exception ignored) {
+        }
 
         double calo = User.estimateCalories(type, count, elapsed, userWeight);
         double dist = "running".equals(type) ? Math.round(count * 0.7 / 1000.0 * 100.0) / 100.0 : 0;
@@ -242,13 +283,39 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
 
         // Hien thi ket qua
-        tvStatus.setText("Hoan thanh! " + count + "/" + target + " | " + (int)calo + " kcal");
-        Toast.makeText(this, "Ket thuc: " + count + " nhip, " + (int)calo + " kcal", Toast.LENGTH_LONG).show();
+        tvStatus.setText("Hoan thanh! " + count + "/" + target + " | " + (int) calo + " kcal");
+        Toast.makeText(this, "Ket thuc: " + count + " nhip, " + (int) calo + " kcal", Toast.LENGTH_LONG).show();
         finish();
     }
 
-    @Override public void onAccuracyChanged(Sensor s, int a) {}
-    @Override protected void onPause() { super.onPause(); if(active && sensor!=null) sm.unregisterListener(this); }
-    @Override protected void onResume() { super.onResume(); if(active && sensor!=null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI); }
-    @Override protected void onDestroy() { super.onDestroy(); if(tone!=null)tone.release(); handler.removeCallbacksAndMessages(null); }
+    @Override
+    public void onAccuracyChanged(Sensor s, int a) {
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (active && sensor != null) {
+            sm.unregisterListener(this);
+            sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (tone != null) tone.release();
+        handler.removeCallbacksAndMessages(null);
+
+        try {
+            Intent stopIntent = new Intent(this, ForegroundService.class);
+            stopService(stopIntent); // Dùng stopService thay vì startService
+        } catch (Exception ignored) {
+        }
+    }
 }
