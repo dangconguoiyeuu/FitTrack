@@ -37,6 +37,10 @@ public class RegisterActivity extends AppCompatActivity {
                         FirebaseHelper.getInstance().saveProfile(u, task -> {});
                         Toast.makeText(this,"Dang ky thanh cong!",Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(this, HomeActivity.class)); finish();
+                        Intent intent = new Intent(this, ProfileActivity.class);
+                        intent.putExtra("IS_FIRST_TIME", true); // Gửi thêm flag để biết là lần đầu
+                        startActivity(intent);
+                        finish();
                     } else Toast.makeText(this,"Loi: "+t.getException().getMessage(),Toast.LENGTH_LONG).show();
                 });
         });

@@ -1,20 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="#F5F5F5">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
-        <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:cardCornerRadius="12dp" app:cardElevation="0dp" app:cardBackgroundColor="@android:color/white">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
-                <TextView android:id="@+id/tvWelcome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Xin chao!" android:textSize="20sp" android:textStyle="bold" android:textColor="#000" />
-                <TextView android:id="@+id/tvBmi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="14sp" android:layout_marginTop="6dp" />
-                <TextView android:id="@+id/tvSuggestion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#666" android:layout_marginTop="2dp" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xin chào!"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#2D3436" />
+
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="3dp"
+                    android:background="#000"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:id="@+id/tvBmi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#636E72"
+                    android:layout_marginTop="12dp" />
+
+                <TextView
+                    android:id="@+id/tvSuggestion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#00B894"
+                    android:layout_marginTop="4dp"
+                    android:textStyle="italic" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bai tap" android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="10dp" />
-        <Button android:id="@+id/btnRunning" android:layout_width="match_parent" android:layout_height="52dp" android:text="Chay bo / Di bo" android:backgroundTint="#000" android:textColor="@android:color/white" android:layout_marginBottom="8dp" />
-        <Button android:id="@+id/btnPushUp" android:layout_width="match_parent" android:layout_height="52dp" android:text="Chong day" android:backgroundTint="#000" android:textColor="@android:color/white" android:layout_marginBottom="8dp" />
-        <Button android:id="@+id/btnSitUp" android:layout_width="match_parent" android:layout_height="52dp" android:text="Gap bung" android:backgroundTint="#000" android:textColor="@android:color/white" android:layout_marginBottom="16dp" />
-        <Button android:id="@+id/btnHistory" android:layout_width="match_parent" android:layout_height="48dp" android:text="Lich su" android:textColor="#000" android:layout_marginBottom="8dp" style="?android:attr/buttonBarButtonStyle" />
-        <Button android:id="@+id/btnProfile" android:layout_width="match_parent" android:layout_height="48dp" android:text="Ho so ca nhan" android:textColor="#000" android:layout_marginBottom="8dp" style="?android:attr/buttonBarButtonStyle" />
-        <Button android:id="@+id/btnLogout" android:layout_width="match_parent" android:layout_height="48dp" android:text="Dang xuat" android:textColor="#999" style="?android:attr/buttonBarButtonStyle" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnGoExercise"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#000">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="267dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="BẮT ĐẦU\nBÀI TẬP"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:text="➔"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/btnHistory"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Lịch sử tập luyện"
+                android:textColor="#000"
+                android:backgroundTint="@android:color/white"
+                android:layout_marginBottom="12dp"
+                android:elevation="2dp"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnProfile"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Hồ sơ cá nhân"
+                android:textColor="#000"
+                android:backgroundTint="@android:color/white"
+                android:layout_marginBottom="12dp"
+                android:elevation="2dp"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Đăng xuất"
+                android:textColor="#FF7675"
+                android:backgroundTint="#FFF5F5"
+                android:elevation="0dp"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

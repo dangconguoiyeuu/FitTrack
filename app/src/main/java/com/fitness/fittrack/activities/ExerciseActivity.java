@@ -1,4 +1,5 @@
 package com.fitness.fittrack.activities;
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -20,16 +21,8 @@ import com.fitness.fittrack.models.WorkoutSession;
 import com.fitness.fittrack.services.ForegroundService;
 import com.fitness.fittrack.utils.FirebaseHelper;
 
-/**
- * Man hinh "Dang tap" theo wireframe:
- * - Vong tron lon hien thi so dem / target
- * - Icon radar bat chuyen dong
- * - Thoi gian + Calo
- * - Phat hien dung 20s -> hien dialog
- * - Am thanh beep moi nhip hop le
- * - Rung khi nhip khong hop le (proximity)
- */
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener {
+    // ... Khai báo các biến UI và Logic ...
     private SensorManager sm;
     private Sensor sensor;
     private String type;
@@ -38,37 +31,38 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private boolean active = false;
     private double userWeight = 65;
 
-    // UI
     private TextView tvTitle, tvCount, tvTarget, tvUnit, tvTime, tvCalo, tvStatus;
 
-    // Timer
     private final Handler handler = new Handler();
     private long startTime, elapsed;
+
+    // --- Luồng cập nhật thời gian và tính toán Calo tiêu thụ theo thời gian thực mỗi giây ---
     private final Runnable ticker = new Runnable() {
         public void run() {
             elapsed = (SystemClock.elapsedRealtime() - startTime) / 1000;
             long h = elapsed / 3600, m = (elapsed % 3600) / 60, s = elapsed % 60;
             String timeStr = h > 0 ? String.format("%02d:%02d:%02d", h, m, s) : String.format("%02d:%02d", m, s);
+
+            // Gọi hàm tính calo dựa trên MET đã chuẩn hóa
             String caloStr = (int) User.estimateCalories(type, count, elapsed, userWeight) + " kcal";
 
             tvTime.setText(timeStr);
             tvCalo.setText(caloStr);
 
-            // BẮN DỮ LIỆU SANG SERVICE ĐỂ CẬP NHẬT LÊN MÀN HÌNH KHÓA MỖI GIÂY
+            // Gửi dữ liệu sang ForegroundService để hiển thị Notification trên màn hình khóa
             try {
                 Intent intent = new Intent(ExerciseActivity.this, ForegroundService.class);
                 intent.putExtra("steps", count + " " + tvUnit.getText().toString());
                 intent.putExtra("time", timeStr);
                 intent.putExtra("calo", caloStr);
                 androidx.core.content.ContextCompat.startForegroundService(ExerciseActivity.this, intent);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
 
             handler.postDelayed(this, 1000);
         }
     };
 
-    // Phat hien dung 20s
+    // --- Luồng kiểm tra trạng thái hoạt động: Nếu sau 20 giây không có nhịp tập mới sẽ hiện cảnh báo ---
     private long lastRepTime = 0;
     private boolean dialogShowing = false;
     private final Runnable inactivityCheck = new Runnable() {
@@ -81,16 +75,15 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     };
 
-    // Sensor logic
-    private boolean peakDetected = false; // running
-    private boolean isNear = false; // pushup
+    private boolean peakDetected = false;
+    private boolean isNear = false;
     private long lastPushTime = 0;
-    private boolean isLying = true; // situp
+    private boolean isLying = true;
 
-    // Sound
     private ToneGenerator tone;
     private Vibrator vibrator;
 
+    // --- Hàm khởi tạo: Thiết lập giao diện, chọn loại cảm biến phù hợp (Proximity/Accelerometer) và load cân nặng ---
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -112,30 +105,31 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
+        // Phân loại cảm biến dựa trên bài tập người dùng đã chọn từ SetupActivity
         switch (type) {
             case "pushup":
-                tvTitle.setText("Dang tap : Chong day");
-                tvUnit.setText("Lan");
-                sensor = sm.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                tvTitle.setText("Đang tập : Chống đẩy");
+                tvUnit.setText("Lần");
+                sensor = sm.getDefaultSensor(Sensor.TYPE_PROXIMITY); // Dùng cảm biến tiệm cận
                 break;
             case "situp":
-                tvTitle.setText("Dang tap : Gap bung");
-                tvUnit.setText("Lan");
-                sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                tvTitle.setText("Đang tập : Gập bụng");
+                tvUnit.setText("Lần");
+                sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // Dùng cảm biến gia tốc
                 break;
             default:
-                tvTitle.setText("Dang tap : Chay bo");
-                tvUnit.setText("Buoc");
+                tvTitle.setText("Đang tập : Chạy bộ");
+                tvUnit.setText("Bước");
                 sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                 break;
         }
 
         tvTarget.setText("/ " + target);
         if (sensor == null) {
-            Toast.makeText(this, "Sensor khong kha dung!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Cảm biến không khả dụng trên thiết bị này!", Toast.LENGTH_LONG).show();
         }
 
-        // Load user weight
+        // Lấy cân nặng người dùng từ Firebase để tính Calo chính xác nhất
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid != null) {
             FirebaseHelper.getInstance().getProfile(uid, t -> {
@@ -149,11 +143,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         startExercise();
     }
 
+    // --- Hàm bắt đầu phiên tập: Đăng ký lắng nghe cảm biến và kích hoạt bộ đếm thời gian ---
     private void startExercise() {
         active = true;
         count = 0;
         tvCount.setText("0");
-        tvStatus.setText("Dang bat nhip chuyen dong");
+        tvStatus.setText("Đang bắt nhịp chuyển động...");
 
         if (sensor != null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
         startTime = SystemClock.elapsedRealtime();
@@ -162,37 +157,38 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         handler.postDelayed(inactivityCheck, 20000);
     }
 
+    // --- Hàm xử lý khi một nhịp tập hợp lệ được ghi nhận: Tăng số đếm, phát âm thanh và kiểm tra mục tiêu ---
     private void onValidRep() {
         count++;
         lastRepTime = SystemClock.elapsedRealtime();
         tvCount.setText(String.valueOf(count));
-        tvStatus.setText("Nhip hop le!");
+        tvStatus.setText("Nhịp hợp lệ!");
 
-        // Am thanh beep
+        // Phát âm thanh Beep ngắn báo hiệu đã đếm thành công
         try {
             tone.startTone(ToneGenerator.TONE_PROP_BEEP, 100);
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
-        // Kiem tra hoan thanh muc tieu
+        // Kiểm tra xem đã hoàn thành số Reps của Set hiện tại chưa
         if (count >= target) {
             if (currentSet >= sets) {
-                finishExercise();
+                finishExercise(); // Hoàn thành toàn bộ các Set
             } else {
                 currentSet++;
                 count = 0;
                 tvCount.setText("0");
-                Toast.makeText(this, "Hoan thanh set " + (currentSet - 1) + "! Nghi 30s...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Hoàn thành set " + (currentSet - 1) + "! Nghỉ 30s...", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    // --- Hàm cốt lõi: Phân tích dữ liệu thô từ cảm biến để nhận diện chuyển động đặc trưng của từng bài tập ---
     @Override
     public void onSensorChanged(SensorEvent e) {
         if (!active) return;
 
         switch (type) {
-            case "running":
+            case "running": // Logic đếm bước chân dựa trên gia tốc tổng hợp
                 if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
                 float mag = (float) Math.sqrt(e.values[0] * e.values[0] + e.values[1] * e.values[1] + e.values[2] * e.values[2]);
                 if (mag > 11.5f && !peakDetected) {
@@ -201,14 +197,14 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 } else if (mag < 9.0f) peakDetected = false;
                 break;
 
-            case "pushup":
+            case "pushup": // Logic chống đẩy dựa trên khoảng cách mặt với điện thoại
                 if (e.sensor.getType() != Sensor.TYPE_PROXIMITY) return;
                 float dist = e.values[0];
                 if (dist < sensor.getMaximumRange()) {
-                    isNear = true;
+                    isNear = true; // Người dùng đang hạ thấp người xuống gần cảm biến
                 } else if (isNear) {
                     long now = SystemClock.elapsedRealtime();
-                    if (now - lastPushTime > 500) {
+                    if (now - lastPushTime > 500) { // Tránh đếm trùng nhịp quá nhanh
                         onValidRep();
                         lastPushTime = now;
                     }
@@ -216,11 +212,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 }
                 break;
 
-            case "situp":
+            case "situp": // Logic gập bụng dựa trên độ nghiêng (trục Z) của điện thoại
                 if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
                 float z = Math.abs(e.values[2]);
-                if (isLying && z < 3.5f) isLying = false;
-                else if (!isLying && z > 6.5f) {
+                if (isLying && z < 3.5f) isLying = false; // Đã ngồi dậy
+                else if (!isLying && z > 6.5f) { // Đã nằm xuống lại
                     onValidRep();
                     isLying = true;
                 }
@@ -228,6 +224,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    // --- Hàm tạm dừng: Hiển thị Dialog khi không thấy chuyển động, cho phép người dùng chọn tập tiếp hoặc nghỉ ---
     private void showPauseDialog() {
         if (dialogShowing) return;
         dialogShowing = true;
@@ -235,68 +232,65 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         sm.unregisterListener(this);
         handler.removeCallbacks(ticker);
 
-        // Rung thong bao
-        if (vibrator != null) vibrator.vibrate(500);
+        if (vibrator != null) vibrator.vibrate(500); // Rung để cảnh báo người dùng
 
         new AlertDialog.Builder(this)
-                .setTitle("Tam dung tap luyen")
-                .setMessage("He thong khong nhan dien duoc chuyen dong trong 20s qua.\nBan co muon ket thuc som khong?")
+                .setTitle("Tạm dừng tập luyện")
+                .setMessage("Hệ thống không nhận diện được chuyển động trong 20s qua.\nBạn có muốn kết thúc sớm không?")
                 .setCancelable(false)
-                .setPositiveButton("Tiep tuc tap luyen", (d, w) -> {
+                .setPositiveButton("Tiếp tục tập", (d, w) -> {
                     dialogShowing = false;
                     active = true;
-                    if (sensor != null)
-                        sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+                    if (sensor != null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
                     lastRepTime = SystemClock.elapsedRealtime();
                     handler.postDelayed(ticker, 0);
                     handler.postDelayed(inactivityCheck, 20000);
                 })
-                .setNegativeButton("Ket thuc & Luu ket qua", (d, w) -> {
+                .setNegativeButton("Kết thúc & Lưu", (d, w) -> {
                     dialogShowing = false;
                     finishExercise();
                 })
                 .show();
     }
 
+    // --- Hàm kết thúc bài tập: Hủy các tiến trình chạy ngầm, tính Calo cuối cùng và lưu kết quả lên Firebase ---
     private void finishExercise() {
         active = false;
         sm.unregisterListener(this);
         handler.removeCallbacks(ticker);
         handler.removeCallbacks(inactivityCheck);
+
         try {
             Intent stopIntent = new Intent(this, ForegroundService.class);
             stopIntent.setAction("STOP");
             startService(stopIntent);
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         double calo = User.estimateCalories(type, count, elapsed, userWeight);
         double dist = "running".equals(type) ? Math.round(count * 0.7 / 1000.0 * 100.0) / 100.0 : 0;
 
-        // Luu len Firebase
+        // Lưu dữ liệu phiên tập vào Firestore để xem lại trong màn hình Lịch sử
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid != null && count > 0) {
             WorkoutSession s = new WorkoutSession(uid, type, count, target, dist, calo, elapsed);
             FirebaseHelper.getInstance().saveWorkout(s, t -> {
-                Toast.makeText(this, t.isSuccessful() ? "Da luu ket qua!" : "Loi luu!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, t.isSuccessful() ? "Đã lưu kết quả!" : "Lỗi lưu dữ liệu!", Toast.LENGTH_SHORT).show();
             });
         }
 
-        // Hien thi ket qua
-        tvStatus.setText("Hoan thanh! " + count + "/" + target + " | " + (int) calo + " kcal");
-        Toast.makeText(this, "Ket thuc: " + count + " nhip, " + (int) calo + " kcal", Toast.LENGTH_LONG).show();
+        tvStatus.setText("Hoàn thành! " + count + "/" + target + " | " + (int) calo + " kcal");
         finish();
     }
 
     @Override
-    public void onAccuracyChanged(Sensor s, int a) {
-    }
+    public void onAccuracyChanged(Sensor s, int a) {}
 
     @Override
     protected void onPause() {
         super.onPause();
     }
 
+    // --- Hàm xử lý khi quay lại app: Đảm bảo cảm biến vẫn được lắng nghe nếu phiên tập đang diễn ra ---
     @Override
     protected void onResume() {
         super.onResume();
@@ -306,6 +300,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
+    // --- Hàm hủy Activity: Giải phóng toàn bộ tài nguyên âm thanh, cảm biến và dừng Service chạy ngầm ---
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -314,8 +309,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
         try {
             Intent stopIntent = new Intent(this, ForegroundService.class);
-            stopService(stopIntent); // Dùng stopService thay vì startService
-        } catch (Exception ignored) {
-        }
+            stopService(stopIntent);
+        } catch (Exception ignored) {}
     }
 }

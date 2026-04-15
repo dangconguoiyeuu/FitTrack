@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/white">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical" android:padding="20dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="16dp">
@@ -10,22 +13,27 @@
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chon bai tap" android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
             <LinearLayout android:id="@+id/cardRunning" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="10dp" android:layout_marginEnd="6dp" android:background="@drawable/card_unselected">
-                <View android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/circle_border_thin" android:layout_marginBottom="6dp" />
+                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_run" android:layout_marginBottom="6dp" />
                 <TextView android:id="@+id/tvCardLabel1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chay bo" android:textSize="11sp" />
             </LinearLayout>
             <LinearLayout android:id="@+id/cardPushup" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="10dp" android:layout_marginEnd="6dp" android:background="@drawable/card_selected">
-                <View android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/circle_border_thin" android:layout_marginBottom="6dp" />
+                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_pushup" android:layout_marginBottom="6dp" />
                 <TextView android:id="@+id/tvCardLabel2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chong day" android:textSize="11sp" android:textColor="@android:color/white" />
             </LinearLayout>
             <LinearLayout android:id="@+id/cardSitup" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="10dp" android:background="@drawable/card_unselected">
-                <View android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/circle_border_thin" android:layout_marginBottom="6dp" />
+                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_situp" android:layout_marginBottom="6dp" />
                 <TextView android:id="@+id/tvCardLabel3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gap bung" android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Huong dan ky thuat" android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
-        <FrameLayout android:layout_width="match_parent" android:layout_height="120dp" android:layout_marginBottom="8dp" android:background="@drawable/border_rounded">
-            <View android:layout_width="48dp" android:layout_height="48dp" android:layout_gravity="center" android:background="@drawable/circle_border_thin" />
-        </FrameLayout>
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/border_rounded"
+            app:use_controller="false"
+            app:resize_mode="fill" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_warning" android:padding="10dp" android:layout_marginBottom="16dp">
             <TextView android:id="@+id/tvNote" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="10sp" android:textColor="#666" />
         </LinearLayout>

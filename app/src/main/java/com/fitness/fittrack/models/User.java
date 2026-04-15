@@ -40,17 +40,28 @@ public class User {
         return new int[]{10, 15, 1500};
     }
 
-    // Tinh calo uoc tinh: MET * weight * hours
-    public static double estimateCalories(String type, int count, long seconds, double weightKg) {
-        if (weightKg <= 0) weightKg = 65;
-        double hours = seconds / 3600.0;
-        double met;
+    // Tinh calo uoc tinh:
+    public static double estimateCalories(String type, int count, long elapsedSeconds, double weight) {
+        double met = 1.0;
+
+        // Gán chỉ số MET chuẩn cho từng loại bài tập
         switch (type) {
-            case "pushup": met = 8.0; break;
-            case "situp": met = 5.0; break;
-            default: met = 7.0; break; // running
+            case "running":
+                met = 9.8; // Chạy bộ tốc độ ~10km/h
+                break;
+            case "pushup":
+                met = 8.0; // Chống đẩy cường độ cao
+                break;
+            case "situp":
+                met = 3.8; // Gập bụng vừa phải
+                break;
         }
-        return Math.round(met * weightKg * hours);
+
+        // Chuyển giây sang phút
+        double minutes = elapsedSeconds / 60.0;
+
+        // Công thức tính calo: (MET * 3.5 * cân nặng) / 200 * số phút
+        return (met * 3.5 * weight / 200.0) * minutes;
     }
 
     public Map<String, Object> toMap() {

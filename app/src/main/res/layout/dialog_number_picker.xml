@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@android:color/white"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nhập mục tiêu"
+        android:textSize="14sp"
+        android:textColor="#888"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvDisplayInput"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:text="0"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:background="#F1F3F4"
+        android:layout_marginBottom="16dp"/>
+
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="4"
+        android:useDefaultMargins="true"
+        android:alignmentMode="alignBounds">
+
+        <Button android:id="@+id/btn1" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="1" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn2" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="2" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn3" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="3" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn4" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="4" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn5" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="5" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn6" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="6" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn7" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="7" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn8" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="8" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn9" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="9" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+
+        <Button android:id="@+id/btnDel" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="⌫" android:textSize="18sp" android:textColor="#FF7675" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btn0" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="0" android:textSize="20sp" android:background="@drawable/border_rounded" android:layout_margin="4dp"/>
+        <Button android:id="@+id/btnOk" style="?android:attr/buttonBarButtonStyle" android:layout_width="60dp" android:layout_height="60dp" android:text="OK" android:textSize="16sp" android:textColor="#00B894" android:textStyle="bold" android:layout_margin="4dp"/>
+    </GridLayout>
+
+</LinearLayout>
