@@ -27,7 +27,7 @@ public class WorkoutSession {
 
     public String getTypeName() {
         if(type==null) return "";
-        switch(type){case "pushup":return "Chong day";case "situp":return "Gap bung";default:return "Chay bo";}
+        switch(type){case "pushup":return "Chống đẩy(Pushup)";case "situp":return "Gập bụng(Situp)";default:return "Chạy bộ(Run)";}
     }
 
     public Map<String,Object> toMap() {

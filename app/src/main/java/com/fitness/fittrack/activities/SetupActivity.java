@@ -3,16 +3,13 @@ package com.fitness.fittrack.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.fitness.fittrack.R;
 import com.fitness.fittrack.utils.FirebaseHelper;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -21,23 +18,23 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerView;
 
 public class SetupActivity extends AppCompatActivity {
-    private String selectedType;
+    // 1. Chỉ khai báo 1 lần duy nhất
+    private String selectedType = "running";
+
+    // Biến lưu trữ mục tiêu phân tích từ Firebase
+    private int targetPushup = 30, targetSitup = 30, targetRunning = 2000, targetSets = 3;
+
+    // Biến người dùng đang chọn hiện tại
     private int reps = 30, sets = 1;
+
     private TextView tvReps, tvSets, tvAiSuggestion, tvNote;
-    private View cardRun, cardPush, cardSit;
+    private View cardRun, cardPush, cardSit, layoutReps, layoutSets;
     private ExoPlayer player;
     private PlayerView playerView;
-
-    private View layoutReps, layoutSets;
-    private int targetPushup = 30;
-    private int targetSitup = 30;
-    private int targetRunning = 2000;
-
     private String currentInput = "";
     private TextView tvDisplayInput;
     private AlertDialog numberPickerDialog;
 
-    // --- Hàm khởi tạo màn hình, ánh xạ View và thiết lập các sự kiện Click ban đầu ---
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
         setContentView(R.layout.activity_setup);
@@ -45,8 +42,9 @@ public class SetupActivity extends AppCompatActivity {
         playerView = findViewById(R.id.playerView);
         initPlayer();
 
-        selectedType = getIntent().getStringExtra("type");
-        if (selectedType == null) selectedType = "pushup";
+        // Lấy type từ Intent, nếu không có thì mặc định là running
+        String typeFromIntent = getIntent().getStringExtra("type");
+        if (typeFromIntent != null) selectedType = typeFromIntent;
 
         cardRun = findViewById(R.id.cardRunning);
         cardPush = findViewById(R.id.cardPushup);
@@ -81,54 +79,79 @@ public class SetupActivity extends AppCompatActivity {
             finish();
         });
 
+        // Chỉ cần gọi duy nhất 1 hàm load dữ liệu
         loadFirebaseData();
     }
 
-    // --- Hàm lấy dữ liệu mục tiêu tập luyện (Reps/Steps) dựa trên BMI đã lưu trên Firebase ---
     private void loadFirebaseData() {
         String uid = FirebaseHelper.getInstance().getUid();
-        if (uid != null) {
-            FirebaseHelper.getInstance().getProfile(uid, t -> {
-                if (t.isSuccessful() && t.getResult().exists()) {
-                    Long tp = t.getResult().getLong("targetPushup");
-                    Long ts = t.getResult().getLong("targetSitup");
-                    Long tr = t.getResult().getLong("targetSteps");
+        if (uid == null) return;
 
-                    if (tp != null) targetPushup = tp.intValue();
-                    if (ts != null) targetSitup = ts.intValue();
-                    if (tr != null) targetRunning = tr.intValue();
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        // Lấy đầy đủ 4 thông số phân tích BMI
+                        Long tp = doc.getLong("targetPushup");
+                        Long ts = doc.getLong("targetSitup");
+                        Long tr = doc.getLong("targetSteps");
+                        Long tSet = doc.getLong("targetSets");
 
-                    selectType(selectedType);
-                }
-            });
-        }
+                        if (tp != null) targetPushup = tp.intValue();
+                        if (ts != null) targetSitup = ts.intValue();
+                        if (tr != null) targetRunning = tr.intValue();
+                        if (tSet != null) targetSets = tSet.intValue();
+
+                        // Sau khi tải xong dữ liệu, mới cập nhật hiển thị
+                        selectType(selectedType);
+                    }
+                });
     }
 
-    // --- Hàm xử lý thay đổi nội dung màn hình (Video, Note, Mục tiêu) khi người dùng chọn bài tập khác ---
     private void selectType(String type) {
         selectedType = type;
         int videoResId;
+
         switch(type) {
-            case "pushup": videoResId = R.raw.guide_pushup; reps = targetPushup; break;
-            case "situp": videoResId = R.raw.guide_situp; reps = targetSitup; break;
-            default: videoResId = R.raw.guide_run; reps = targetRunning; break;
+            case "pushup":
+                videoResId = R.raw.guide_pushup;
+                reps = targetPushup;
+                sets = targetSets; // Đồng bộ số hiệp
+                break;
+            case "situp":
+                videoResId = R.raw.guide_situp;
+                reps = targetSitup;
+                sets = targetSets; // Đồng bộ số hiệp
+                break;
+            default:
+                videoResId = R.raw.guide_run;
+                reps = targetRunning;
+                sets = 1; // Chạy bộ mặc định 1 hiệp
+                break;
         }
         playVideo(videoResId);
 
-        if ("pushup".equals(type)) {
-            tvNote.setText("Lưu ý: Đặt điện thoại giữa ngực để máy tự động đếm chính xác nhất");
-            tvAiSuggestion.setText("Đề xuất AI (BMI): 1 set, " + targetPushup + " cái");
-        } else if ("situp".equals(type)) {
-            tvNote.setText("Lưu ý: Cầm điện thoại trên tay, đặt tay sau đầu hoặc trên ngực, nằm ngửa và gập người lên");
-            tvAiSuggestion.setText("Đề xuất AI (BMI): 1 set, " + targetSitup + " cái");
+        // Hiển thị dòng đề xuất từ phân tích BMI
+        if ("pushup".equals(type) || "situp".equals(type)) {
+            tvNote.setText("Lưu ý: Thực hiện đúng tư thế để đạt hiệu quả cao nhất.");
+            tvAiSuggestion.setText("Phân tích BMI đề xuất: " + sets + " hiệp x " + reps + " cái");
         } else {
-            tvNote.setText("Lưu ý: Cầm hoặc bỏ điện thoại trong túi quần, đi/chạy bình thường");
-            tvAiSuggestion.setText("Đề xuất AI (BMI): " + targetRunning + " bước");
+            tvNote.setText("Lưu ý: Đi hoặc chạy đều đặn, bỏ điện thoại vào túi quần.");
+            tvAiSuggestion.setText("Phân tích BMI đề xuất: " + reps + " bước");
+        }
+        if ("running".equals(type)) {
+            tvAiSuggestion.setText("Phân tích BMI đề xuất: " + reps + " bước");
+            layoutSets.setVisibility(View.GONE); // Ẩn chọn hiệp khi chạy bộ
+        } else {
+            tvAiSuggestion.setText("Phân tích BMI đề xuất: " + sets + " hiệp x " + reps + " cái");
+            layoutSets.setVisibility(View.VISIBLE); // Hiện lại khi tập gym
         }
 
         updateCardStyles(type);
         upd();
     }
+
+    // Các hàm showNumberPickerDialog, confirmInput, updateCardStyles, upd, initPlayer, playVideo, onDestroy GIỮ NGUYÊN NHƯ CŨ
 
     // --- Hàm hiển thị hộp thoại bàn phím số (0-9) để người dùng nhập trực tiếp số Reps hoặc Sets ---
     private void showNumberPickerDialog(boolean isReps) {

@@ -29,6 +29,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private String type;
     private int target, sets, currentSet = 1;
     private int count = 0;
+    private int totalCount = 0;
     private boolean active = false;
     private double userWeight = 65;
 
@@ -133,7 +134,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 break;
         }
         findViewById(R.id.btnFinish).setOnClickListener(v -> showExitConfirmationDialog());
-
         tvTarget.setText("/ " + target);
         if (sensor == null) {
             Toast.makeText(this, "Cảm biến không khả dụng trên thiết bị này!", Toast.LENGTH_LONG).show();
@@ -170,6 +170,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     // --- Hàm xử lý khi một nhịp tập hợp lệ được ghi nhận: Tăng số đếm, phát âm thanh và kiểm tra mục tiêu ---
     private void onValidRep() {
         count++;
+        totalCount++;
         lastRepTime = SystemClock.elapsedRealtime();
         tvCount.setText(String.valueOf(count));
         tvStatus.setText("Nhịp hợp lệ!");
@@ -184,10 +185,8 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             if (currentSet >= sets) {
                 finishExercise(); // Hoàn thành toàn bộ các Set
             } else {
-                currentSet++;
-                count = 0;
-                tvCount.setText("0");
-                Toast.makeText(this, "Hoàn thành set " + (currentSet - 1) + "! Nghỉ 30s...", Toast.LENGTH_SHORT).show();
+                playRestSound();
+                showRestDialog();
             }
         }
     }
@@ -286,26 +285,27 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         sm.unregisterListener(this);
         handler.removeCallbacks(ticker);
         handler.removeCallbacks(inactivityCheck);
-
+        playSuccessSound();
         try {
             Intent stopIntent = new Intent(this, ForegroundService.class);
             stopIntent.setAction("STOP");
             startService(stopIntent);
         } catch (Exception ignored) {}
 
-        double calo = User.estimateCalories(type, count, elapsed, userWeight);
-        double dist = "running".equals(type) ? Math.round(count * 0.7 / 1000.0 * 100.0) / 100.0 : 0;
+        double calo = User.estimateCalories(type, totalCount, elapsed, userWeight);
+        double dist = "running".equals(type) ? Math.round(totalCount * 0.7 / 1000.0 * 100.0) / 100.0 : 0;
 
         // Lưu dữ liệu phiên tập vào Firestore để xem lại trong màn hình Lịch sử
         String uid = FirebaseHelper.getInstance().getUid();
-        if (uid != null && count > 0) {
-            WorkoutSession s = new WorkoutSession(uid, type, count, target, dist, calo, elapsed);
+        if (uid != null && totalCount > 0) {
+            // TRUYỀN totalCount VÀO ĐÂY để lưu tổng số rep của cả buổi tập
+            WorkoutSession s = new WorkoutSession(uid, type, totalCount, target, dist, calo, elapsed);
             FirebaseHelper.getInstance().saveWorkout(s, t -> {
-                Toast.makeText(this, t.isSuccessful() ? "Đã lưu kết quả!" : "Lỗi lưu dữ liệu!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), t.isSuccessful() ? "Đã lưu kết quả!" : "Lỗi lưu dữ liệu!", Toast.LENGTH_SHORT).show();
             });
         }
 
-        tvStatus.setText("Hoàn thành! " + count + "/" + target + " | " + (int) calo + " kcal");
+        tvStatus.setText("Hoàn thành! Tổng: " + totalCount + " | " + (int) calo + " kcal");
         finish();
     }
 
@@ -353,5 +353,79 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 .setPositiveButton("Kết thúc & Lưu", (d, w) -> finishExercise())
                 .setNegativeButton("Tập tiếp", null)
                 .show();
+    }
+    private void playSuccessSound() {
+        try {
+            android.media.MediaPlayer mp = android.media.MediaPlayer.create(this, R.raw.success_sound);
+            mp.setOnCompletionListener(android.media.MediaPlayer::release); // Giải phóng bộ nhớ sau khi phát xong
+            mp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void playRestSound() {
+        try {
+            // Sử dụng file rest_start.mp3 trong thư mục raw
+            android.media.MediaPlayer mp = android.media.MediaPlayer.create(this, R.raw.rest_start);
+            mp.setOnCompletionListener(android.media.MediaPlayer::release);
+            mp.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void showRestDialog() {
+        active = false;
+        sm.unregisterListener(this);
+        handler.removeCallbacks(ticker);
+        handler.removeCallbacks(inactivityCheck);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Nghỉ giải lao - Hiệp " + currentSet);
+
+        builder.setMessage("Bắt đầu nghỉ...");
+
+        builder.setCancelable(false);
+        builder.setPositiveButton("Tập tiếp ngay", (d, w) -> {
+            // Nếu bấm nút này, ta sẽ dismiss và bắt đầu set mới luôn
+            d.dismiss();
+            startNextSet();
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Thiết lập bộ đếm ngược
+        new android.os.CountDownTimer(30000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // Cập nhật lại Message mỗi giây
+                if (dialog.isShowing()) {
+                    dialog.setMessage("Thời gian nghỉ còn lại: " + (millisUntilFinished / 1000) + " giây");
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                    startNextSet();
+                }
+            }
+        }.start();
+    }
+    private void startNextSet() {
+        currentSet++; // Tăng số hiệp hiện tại
+        count = 0;    // Reset số lần tập về 0 cho hiệp mới
+        tvCount.setText("0");
+        tvTitle.setText("Đang tập : " + (type.equals("pushup") ? "Chống đẩy" :
+                type.equals("situp") ? "Gập bụng" : "Chạy bộ") + " (Hiệp " + currentSet + ")");
+
+        // Kích hoạt lại cảm biến và đồng hồ
+        active = true;
+        if (sensor != null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+        lastRepTime = SystemClock.elapsedRealtime();
+        handler.postDelayed(ticker, 0);
+
+        Toast.makeText(this, "Bắt đầu hiệp " + currentSet + "!", Toast.LENGTH_SHORT).show();
     }
 }
