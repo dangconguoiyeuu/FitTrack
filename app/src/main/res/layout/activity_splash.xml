@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:gravity="center" android:orientation="vertical" android:background="@android:color/white">
-    <View android:layout_width="80dp" android:layout_height="80dp" android:background="@drawable/circle_border_thin" />
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="FitTrack" android:textSize="28sp" android:textStyle="bold" android:textColor="#000" android:layout_marginTop="12dp" />
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Ho tro luyen tap the chat" android:textSize="13sp" android:textColor="#888" android:layout_marginTop="4dp" />
-    <ProgressBar android:layout_width="24dp" android:layout_height="24dp" android:layout_marginTop="32dp" android:indeterminateTint="#000" />
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_logo"
+            android:contentDescription="FitTrack Logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:letterSpacing="0.1"
+            android:text="FIT TRACK"
+            android:textColor="#000000"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:alpha="0.5"
+            android:text="Ứng dụng hỗ trợ tập thể chất thông minh"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:letterSpacing="0.05" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:indeterminateTint="#000000" />
+</RelativeLayout>

@@ -16,6 +16,7 @@ import java.util.List;
 public class HistoryActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b); setContentView(R.layout.activity_history);
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         RecyclerView rv = findViewById(R.id.recyclerView);
         TextView empty = findViewById(R.id.tvEmpty);
         rv.setLayoutManager(new LinearLayoutManager(this));

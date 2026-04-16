@@ -11,28 +11,32 @@ public class User {
 
     public User() {}
 
+    // --- Tính toán BMI dựa trên chiều cao (cm) và cân nặng (kg) ---
     public double calculateBMI() {
         if (height <= 0) return 0;
         double hm = height / 100.0;
         return Math.round((weight / (hm * hm)) * 10.0) / 10.0;
     }
 
+    // --- Phân loại thể trạng dựa trên chỉ số BMI ---
     public static String getBMICategory(double b) {
-        if (b <= 0) return "Chua tinh";
-        if (b < 18.5) return "Thieu can";
-        if (b < 25) return "Binh thuong";
-        if (b < 30) return "Thua can";
-        return "Beo phi";
+        if (b <= 0) return "Chưa tính";
+        if (b < 18.5) return "Thiếu cân";
+        if (b < 25) return "Bình thường";
+        if (b < 30) return "Thừa cân";
+        return "Béo phì";
     }
 
+    // --- Đưa ra lời khuyên luyện tập dựa trên chỉ số BMI ---
     public static String getSuggestion(double b) {
-        if (b <= 0) return "Cap nhat ho so";
-        if (b < 18.5) return "Tap tang co, bo sung dinh duong";
-        if (b < 25) return "Duy tri the luc, tap deu dan";
-        if (b < 30) return "Tang cardio giam mo";
-        return "Bat dau nhe, tang dan";
+        if (b <= 0) return "Cập nhật hồ sơ";
+        if (b < 18.5) return "Tập tăng cơ, bổ sung dinh dưỡng";
+        if (b < 25) return "Duy trì thể lực, tập đều đặn";
+        if (b < 30) return "Tăng cardio giảm mỡ";
+        return "Bắt đầu nhẹ nhàng, tăng dần cường độ";
     }
 
+    // --- Đề xuất mục tiêu số lần tập mặc định dựa trên thể trạng ---
     public static int[] getDefaultTargets(double b) {
         if (b < 18.5) return new int[]{15, 20, 1000};
         if (b < 25) return new int[]{30, 40, 2000};
@@ -40,14 +44,16 @@ public class User {
         return new int[]{10, 15, 1500};
     }
 
-    // Tinh calo uoc tinh:
+    /**
+     * Tính toán lượng Calo tiêu thụ ước tính dựa trên chỉ số MET (Metabolic Equivalent of Task)
+     * Công thức: (MET * 3.5 * cân nặng) / 200 * số phút tập luyện
+     */
     public static double estimateCalories(String type, int count, long elapsedSeconds, double weight) {
         double met = 1.0;
 
-        // Gán chỉ số MET chuẩn cho từng loại bài tập
         switch (type) {
             case "running":
-                met = 9.8; // Chạy bộ tốc độ ~10km/h
+                met = 9.8; // Chạy bộ tốc độ trung bình (~10km/h)
                 break;
             case "pushup":
                 met = 8.0; // Chống đẩy cường độ cao
@@ -57,13 +63,11 @@ public class User {
                 break;
         }
 
-        // Chuyển giây sang phút
         double minutes = elapsedSeconds / 60.0;
-
-        // Công thức tính calo: (MET * 3.5 * cân nặng) / 200 * số phút
         return (met * 3.5 * weight / 200.0) * minutes;
     }
 
+    // --- Chuyển đổi đối tượng sang Map để lưu trữ trên Firebase Firestore ---
     public Map<String, Object> toMap() {
         Map<String, Object> m = new HashMap<>();
         m.put("uid", uid); m.put("email", email); m.put("name", name);
@@ -76,7 +80,7 @@ public class User {
         return m;
     }
 
-    // Getters & Setters
+    // --- Hệ thống Getters & Setters ---
     public String getUid(){return uid;} public void setUid(String u){uid=u;}
     public String getEmail(){return email;} public void setEmail(String e){email=e;}
     public String getName(){return name;} public void setName(String n){name=n;}

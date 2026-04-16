@@ -1,38 +1,273 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/white">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp" android:gravity="center_horizontal">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ket qua phan tich" android:textSize="20sp" android:textStyle="bold" android:textColor="#000" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dua tren chi so BMI" android:textSize="11sp" android:textColor="#999" android:layout_marginBottom="20dp" />
-        <LinearLayout android:layout_width="100dp" android:layout_height="100dp" android:gravity="center" android:orientation="vertical" android:background="@drawable/circle_border">
-            <TextView android:id="@+id/tvBmiValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="28sp" android:textStyle="bold" android:textColor="#000" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="kg/m2" android:textSize="9sp" android:textColor="#888" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kết quả phân tích"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dựa trên chỉ số BMI"
+            android:textSize="11sp"
+            android:textColor="#999"
+            android:layout_marginBottom="20dp" />
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="@drawable/circle_border">
+
+            <TextView
+                android:id="@+id/tvBmiValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="kg/m²"
+                android:textSize="9sp"
+                android:textColor="#888" />
         </LinearLayout>
-        <TextView android:id="@+id/tvBmiCategory" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="15sp" android:textStyle="bold" android:textColor="#000" android:layout_marginTop="8dp" />
-        <ProgressBar android:id="@+id/pbBmi" android:layout_width="match_parent" android:layout_height="12dp" android:layout_marginTop="16dp" style="@android:style/Widget.ProgressBar.Horizontal" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp"><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Thieu can" android:textSize="8sp" android:textColor="#999" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Binh thuong" android:textSize="8sp" android:textColor="#999" android:gravity="center" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Thua can" android:textSize="8sp" android:textColor="#999" android:gravity="center" /><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Beo phi" android:textSize="8sp" android:textColor="#999" android:gravity="end" /></LinearLayout>
-        <TextView android:id="@+id/tvBmiSuggestion" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#666" android:gravity="center" android:layout_marginBottom="20dp" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="De xuat muc tieu hang ngay" android:textSize="14sp" android:textStyle="bold" android:textColor="#000" android:layout_marginBottom="12dp" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="12dp" android:layout_marginBottom="8dp" android:background="@drawable/border_rounded">
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Chong day" android:textSize="13sp" />
-            <Button android:id="@+id/btnPushupMinus" android:layout_width="36dp" android:layout_height="36dp" android:text="-" android:textSize="18sp" style="?android:attr/buttonBarButtonStyle" />
-            <TextView android:id="@+id/tvTargetPushup" android:layout_width="48dp" android:layout_height="wrap_content" android:textSize="18sp" android:textStyle="bold" android:gravity="center" />
-            <Button android:id="@+id/btnPushupPlus" android:layout_width="36dp" android:layout_height="36dp" android:text="+" android:textSize="18sp" style="?android:attr/buttonBarButtonStyle" />
+
+        <TextView
+            android:id="@+id/tvBmiCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginTop="8dp" />
+
+        <ProgressBar
+            android:id="@+id/pbBmi"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_marginTop="16dp"
+            style="@android:style/Widget.ProgressBar.Horizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Thiếu cân"
+                android:textSize="8sp"
+                android:textColor="#999" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Bình thường"
+                android:textSize="8sp"
+                android:textColor="#999"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Thừa cân"
+                android:textSize="8sp"
+                android:textColor="#999"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Béo phì"
+                android:textSize="8sp"
+                android:textColor="#999"
+                android:gravity="end" />
         </LinearLayout>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="12dp" android:layout_marginBottom="8dp" android:background="@drawable/border_rounded">
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Gap bung" android:textSize="13sp" />
-            <Button android:id="@+id/btnSitupMinus" android:layout_width="36dp" android:layout_height="36dp" android:text="-" android:textSize="18sp" style="?android:attr/buttonBarButtonStyle" />
-            <TextView android:id="@+id/tvTargetSitup" android:layout_width="48dp" android:layout_height="wrap_content" android:textSize="18sp" android:textStyle="bold" android:gravity="center" />
-            <Button android:id="@+id/btnSitupPlus" android:layout_width="36dp" android:layout_height="36dp" android:text="+" android:textSize="18sp" style="?android:attr/buttonBarButtonStyle" />
+
+        <TextView
+            android:id="@+id/tvBmiSuggestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#666"
+            android:gravity="center"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đề xuất mục tiêu hàng ngày"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginBottom="12dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/border_rounded">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Chống đẩy"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnPushupMinus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="-"
+                android:textSize="18sp"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <TextView
+                android:id="@+id/tvTargetPushup"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/btnPushupPlus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="+"
+                android:textSize="18sp"
+                style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="12dp" android:layout_marginBottom="16dp" android:background="@drawable/border_rounded">
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Chay bo (buoc)" android:textSize="13sp" />
-            <Button android:id="@+id/btnStepsMinus" android:layout_width="36dp" android:layout_height="36dp" android:text="-" android:textSize="18sp" style="?android:attr/buttonBarButtonStyle" />
-            <TextView android:id="@+id/tvTargetSteps" android:layout_width="56dp" android:layout_height="wrap_content" android:textSize="18sp" android:textStyle="bold" android:gravity="center" />
-            <Button android:id="@+id/btnStepsPlus" android:layout_width="36dp" android:layout_height="36dp" android:text="+" android:textSize="18sp" style="?android:attr/buttonBarButtonStyle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/border_rounded">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Gập bụng"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnSitupMinus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="-"
+                android:textSize="18sp"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <TextView
+                android:id="@+id/tvTargetSitup"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/btnSitupPlus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="+"
+                android:textSize="18sp"
+                style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-            <Button android:id="@+id/btnEdit" android:layout_width="0dp" android:layout_weight="1" android:layout_height="52dp" android:text="Chinh lai" android:textColor="#000" android:layout_marginEnd="8dp" style="?android:attr/buttonBarButtonStyle" />
-            <Button android:id="@+id/btnConfirm" android:layout_width="0dp" android:layout_weight="1" android:layout_height="52dp" android:text="Xac nhan" android:textColor="@android:color/white" android:textStyle="bold" android:backgroundTint="#000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/border_rounded">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Chạy bộ (bước)"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnStepsMinus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="-"
+                android:textSize="18sp"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <TextView
+                android:id="@+id/tvTargetSteps"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <Button
+                android:id="@+id/btnStepsPlus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="+"
+                android:textSize="18sp"
+                style="?android:attr/buttonBarButtonStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="52dp"
+                android:text="Chỉnh lại"
+                android:textColor="#000"
+                android:layout_marginEnd="8dp"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="52dp"
+                android:text="Xác nhận"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:backgroundTint="#000" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

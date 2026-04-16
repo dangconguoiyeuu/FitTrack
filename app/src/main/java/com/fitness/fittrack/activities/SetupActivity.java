@@ -119,7 +119,7 @@ public class SetupActivity extends AppCompatActivity {
             tvNote.setText("Lưu ý: Đặt điện thoại giữa ngực để máy tự động đếm chính xác nhất");
             tvAiSuggestion.setText("Đề xuất AI (BMI): 1 set, " + targetPushup + " cái");
         } else if ("situp".equals(type)) {
-            tvNote.setText("Lưu ý: Đặt điện thoại trên bụng/ngực, nằm ngửa và gập người lên");
+            tvNote.setText("Lưu ý: Cầm điện thoại trên tay, đặt tay sau đầu hoặc trên ngực, nằm ngửa và gập người lên");
             tvAiSuggestion.setText("Đề xuất AI (BMI): 1 set, " + targetSitup + " cái");
         } else {
             tvNote.setText("Lưu ý: Cầm hoặc bỏ điện thoại trong túi quần, đi/chạy bình thường");

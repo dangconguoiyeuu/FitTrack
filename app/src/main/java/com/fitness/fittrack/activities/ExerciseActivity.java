@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -79,9 +80,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private boolean isNear = false;
     private long lastPushTime = 0;
     private boolean isLying = true;
-
+    private long lastSitupTime = 0;
     private ToneGenerator tone;
     private Vibrator vibrator;
+    private ImageView ivExerciseIcon;
 
     // --- Hàm khởi tạo: Thiết lập giao diện, chọn loại cảm biến phù hợp (Proximity/Accelerometer) và load cân nặng ---
     @Override
@@ -89,6 +91,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(b);
         setContentView(R.layout.activity_exercise);
 
+        ivExerciseIcon = findViewById(R.id.ivExerciseIcon);
         type = getIntent().getStringExtra("type");
         target = getIntent().getIntExtra("target", 30);
         sets = getIntent().getIntExtra("sets", 1);
@@ -108,21 +111,28 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         // Phân loại cảm biến dựa trên bài tập người dùng đã chọn từ SetupActivity
         switch (type) {
             case "pushup":
+
                 tvTitle.setText("Đang tập : Chống đẩy");
                 tvUnit.setText("Lần");
+                ivExerciseIcon.setImageResource(R.drawable.ic_pushup);
                 sensor = sm.getDefaultSensor(Sensor.TYPE_PROXIMITY); // Dùng cảm biến tiệm cận
                 break;
             case "situp":
+
                 tvTitle.setText("Đang tập : Gập bụng");
                 tvUnit.setText("Lần");
+                ivExerciseIcon.setImageResource(R.drawable.ic_situp);
                 sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // Dùng cảm biến gia tốc
                 break;
             default:
+
                 tvTitle.setText("Đang tập : Chạy bộ");
                 tvUnit.setText("Bước");
+                ivExerciseIcon.setImageResource(R.drawable.ic_run);
                 sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                 break;
         }
+        findViewById(R.id.btnFinish).setOnClickListener(v -> showExitConfirmationDialog());
 
         tvTarget.setText("/ " + target);
         if (sensor == null) {
@@ -212,13 +222,30 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 }
                 break;
 
-            case "situp": // Logic gập bụng dựa trên độ nghiêng (trục Z) của điện thoại
+            case "situp":
                 if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
-                float z = Math.abs(e.values[2]);
-                if (isLying && z < 3.5f) isLying = false; // Đã ngồi dậy
-                else if (!isLying && z > 6.5f) { // Đã nằm xuống lại
-                    onValidRep();
-                    isLying = true;
+
+                // Lấy độ nghiêng trục Z (Màn hình điện thoại so với mặt đất)
+                float zVal = Math.abs(e.values[2]);
+
+                // BƯỚC 1: Phát hiện khi ông đã gập người lên (Z giảm xuống)
+                // Ngưỡng 5.5f là đủ nhạy để nhận diện cú gập kể cả khi tay để sau đầu
+                if (zVal < 5.5f) {
+                    isLying = false; // Đã rời khỏi tư thế nằm
+                }
+
+                // BƯỚC 2: Phát hiện khi ông đã nằm xuống lại (Z tăng lên)
+                else if (!isLying && zVal > 8.0f) {
+                    long now = SystemClock.elapsedRealtime();
+
+                    // CHẶN ĐẾM KÉP: Chỉ tính nhịp nếu cách lần trước ít nhất 1.2 giây
+                    // Đây là cách fix lỗi đếm 2 lần mà ông gặp phải
+                    if (now - lastSitupTime > 1800) {
+                        onValidRep();
+                        lastSitupTime = now;
+                    }
+
+                    isLying = true; // Quay lại trạng thái chuẩn bị nằm
                 }
                 break;
         }
@@ -311,5 +338,20 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Intent stopIntent = new Intent(this, ForegroundService.class);
             stopService(stopIntent);
         } catch (Exception ignored) {}
+    }
+    // --- Ghi đè nút Back của hệ thống điện thoại ---
+    @Override
+    public void onBackPressed() {
+        showExitConfirmationDialog();
+    }
+
+    // --- Hàm hiển thị bảng hỏi xác nhận thoát ---
+    private void showExitConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Kết thúc sớm?")
+                .setMessage("Bạn có muốn dừng bài tập ngay bây giờ không?")
+                .setPositiveButton("Kết thúc & Lưu", (d, w) -> finishExercise())
+                .setNegativeButton("Tập tiếp", null)
+                .show();
     }
 }

@@ -3,38 +3,60 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:gravity="center" android:padding="24dp"
     android:background="@android:color/white">
+
     <TextView android:id="@+id/tvTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Dang tap" android:textSize="18sp" android:textStyle="bold" android:textColor="#000" />
+        android:text="Đang tập" android:textSize="18sp" android:textStyle="bold" android:textColor="#000" />
+
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Tu dong ghi nhan" android:textSize="11sp" android:textColor="#999" android:layout_marginBottom="32dp" />
+        android:text="Tự động ghi nhận" android:textSize="11sp" android:textColor="#999" android:layout_marginBottom="32dp" />
+
     <FrameLayout android:layout_width="160dp" android:layout_height="160dp" android:layout_marginBottom="16dp">
         <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/circle_border" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
             <TextView android:id="@+id/tvCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="0" android:textSize="52sp" android:textStyle="bold" android:textColor="#000" />
             <TextView android:id="@+id/tvUnit" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Lan" android:textSize="13sp" android:textColor="#666" />
+                android:text="Lần" android:textSize="13sp" android:textColor="#666" />
         </LinearLayout>
     </FrameLayout>
+
     <TextView android:id="@+id/tvTarget" android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="/ 30" android:textSize="14sp" android:textColor="#999" android:layout_marginBottom="8dp" />
-    <View android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/circle_small_black" android:layout_marginBottom="4dp" />
+
+    <ImageView
+        android:id="@+id/ivExerciseIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/ic_pushup" />
+
     <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Dang bat nhip chuyen dong" android:textSize="10sp" android:textColor="#888" android:layout_marginBottom="32dp" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center">
+        android:text="Đang bắt nhịp chuyển động" android:textSize="10sp" android:textColor="#888" android:layout_marginBottom="32dp" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginBottom="24dp">
         <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center"
             android:background="@drawable/border_rounded" android:padding="16dp" android:layout_marginEnd="8dp">
             <TextView android:id="@+id/tvTime" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="00:00" android:textSize="20sp" android:textStyle="bold" android:textColor="#000" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Thoi gian" android:textSize="10sp" android:textColor="#888" />
+                android:text="Thời gian" android:textSize="10sp" android:textColor="#888" />
         </LinearLayout>
         <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center"
             android:background="@drawable/border_rounded" android:padding="16dp" android:layout_marginStart="8dp">
             <TextView android:id="@+id/tvCalo" android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="0 kcal" android:textSize="20sp" android:textStyle="bold" android:textColor="#000" />
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Tieu thu" android:textSize="10sp" android:textColor="#888" />
+                android:text="Tiêu thụ" android:textSize="10sp" android:textColor="#888" />
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnFinish"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="KẾT THÚC"
+        android:backgroundTint="#FF4757"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+
 </LinearLayout>

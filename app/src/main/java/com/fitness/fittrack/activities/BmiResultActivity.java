@@ -40,7 +40,7 @@ public class BmiResultActivity extends AppCompatActivity {
                 com.google.firebase.firestore.FirebaseFirestore.getInstance()
                     .collection("users").document(uid).update(m);
             }
-            Toast.makeText(this,"Da luu muc tieu!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Đã lưu mục tiêu!",Toast.LENGTH_SHORT).show();
             finish();
         });
         findViewById(R.id.btnEdit).setOnClickListener(v -> finish());

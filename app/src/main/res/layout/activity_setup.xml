@@ -8,24 +8,24 @@
         android:orientation="vertical" android:padding="20dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:layout_marginBottom="16dp">
             <TextView android:id="@+id/btnBack" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="‹" android:textSize="28sp" android:textColor="#000" android:paddingEnd="12dp" android:clickable="true" android:focusable="true" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thiet lap phien tap" android:textSize="18sp" android:textStyle="bold" android:textColor="#000" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thiết lập phiên tập" android:textSize="18sp" android:textStyle="bold" android:textColor="#000" />
         </LinearLayout>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chon bai tap" android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chọn bài tập" android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
             <LinearLayout android:id="@+id/cardRunning" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="10dp" android:layout_marginEnd="6dp" android:background="@drawable/card_unselected">
                 <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_run" android:layout_marginBottom="6dp" />
-                <TextView android:id="@+id/tvCardLabel1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chay bo" android:textSize="11sp" />
+                <TextView android:id="@+id/tvCardLabel1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chạy bộ" android:textSize="11sp" />
             </LinearLayout>
             <LinearLayout android:id="@+id/cardPushup" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="10dp" android:layout_marginEnd="6dp" android:background="@drawable/card_selected">
                 <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_pushup" android:layout_marginBottom="6dp" />
-                <TextView android:id="@+id/tvCardLabel2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chong day" android:textSize="11sp" android:textColor="@android:color/white" />
+                <TextView android:id="@+id/tvCardLabel2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chống đẩy" android:textSize="11sp" android:textColor="@android:color/white" />
             </LinearLayout>
             <LinearLayout android:id="@+id/cardSitup" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:padding="10dp" android:background="@drawable/card_unselected">
                 <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_situp" android:layout_marginBottom="6dp" />
-                <TextView android:id="@+id/tvCardLabel3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gap bung" android:textSize="11sp" />
+                <TextView android:id="@+id/tvCardLabel3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Gập bụng" android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Huong dan ky thuat" android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hướng dẫn kỹ thuật" android:textSize="13sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/playerView"
             android:layout_width="match_parent"
@@ -37,7 +37,7 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_warning" android:padding="10dp" android:layout_marginBottom="16dp">
             <TextView android:id="@+id/tvNote" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="10sp" android:textColor="#666" />
         </LinearLayout>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Muc tieu (Override)" android:textSize="13sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mục tiêu (Override)" android:textSize="13sp" android:textStyle="bold" />
         <TextView android:id="@+id/tvAiSuggestion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="10sp" android:textColor="#888" android:layout_marginBottom="12dp" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginBottom="8dp">
             <Button android:id="@+id/btnRepsMinus" android:layout_width="48dp" android:layout_height="48dp" android:text="-" android:textSize="20sp" android:backgroundTint="@android:color/white" android:textColor="#000" style="?android:attr/buttonBarButtonStyle" android:background="@drawable/border_rounded" />
@@ -55,6 +55,6 @@
             </LinearLayout>
             <Button android:id="@+id/btnSetsPlus" android:layout_width="48dp" android:layout_height="48dp" android:text="+" android:textSize="20sp" android:backgroundTint="@android:color/white" android:textColor="#000" style="?android:attr/buttonBarButtonStyle" android:background="@drawable/border_rounded" />
         </LinearLayout>
-        <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="56dp" android:text="Bat dau tap" android:textSize="16sp" android:textStyle="bold" android:textColor="@android:color/white" android:backgroundTint="#000" />
+        <Button android:id="@+id/btnStart" android:layout_width="match_parent" android:layout_height="56dp" android:text="Bắt đầu tập" android:textSize="16sp" android:textStyle="bold" android:textColor="@android:color/white" android:backgroundTint="#000" />
     </LinearLayout>
 </ScrollView>
