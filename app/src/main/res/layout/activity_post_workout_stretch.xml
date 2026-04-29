@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Giãn cơ sau tập"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Đây là phần bổ trợ sau buổi tập. Video sẽ phát lặp lại, còn dữ liệu tập luyện chỉ được lưu khi bạn bấm Kết thúc tập."
+        android:textColor="#666666"
+        android:textSize="13sp" />
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerStretch"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        app:show_buffering="when_playing"
+        app:use_controller="false" />
+
+    <TextView
+        android:id="@+id/tvStretchVideoFallback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="#FFF7ED"
+        android:padding="12dp"
+        android:text="Chưa tìm thấy video giãn cơ trong thư mục raw."
+        android:textColor="#92400E"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnFinishWorkout"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="22dp"
+        android:backgroundTint="#000000"
+        android:text="Kết thúc tập"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+</LinearLayout>

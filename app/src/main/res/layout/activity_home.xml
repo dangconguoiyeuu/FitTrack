@@ -60,6 +60,55 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardStreak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardBackgroundColor="#FFF7ED">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/ivFlame"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/ic_flame"
+                    android:layout_marginEnd="12dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStreak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chuỗi tập: 3 ngày"
+                        android:textColor="#111111"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hoàn thành bài tập mỗi ngày để giữ chuỗi."
+                        android:textColor="#92400E"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/btnGoExercise"
             android:layout_width="match_parent"
             android:layout_height="120dp"
@@ -122,6 +171,30 @@
                 android:backgroundTint="@android:color/white"
                 android:layout_marginBottom="12dp"
                 android:elevation="2dp"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnReminder"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Nhắc nhở tập luyện"
+                android:textColor="#000"
+                android:backgroundTint="@android:color/white"
+                android:layout_marginBottom="12dp"
+                android:elevation="2dp"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnDemoStreak"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Xem thử chuỗi 7 ngày"
+                android:textColor="#92400E"
+                android:backgroundTint="#FFF7ED"
+                android:layout_marginBottom="12dp"
+                android:elevation="1dp"
                 android:textAllCaps="false"
                 app:cornerRadius="12dp" />
 

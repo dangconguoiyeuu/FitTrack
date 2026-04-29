@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <TextView
+        android:id="@+id/tvStretchTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Giãn cơ"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvStretchInstruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Thả lỏng cơ thể trước hiệp tiếp theo."
+        android:textColor="#555555"
+        android:textSize="14sp" />
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerStretch"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_marginTop="14dp"
+        app:show_buffering="when_playing"
+        app:use_controller="false" />
+
+    <TextView
+        android:id="@+id/tvStretchVideoFallback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="#FFF7ED"
+        android:padding="12dp"
+        android:text="Chưa tìm thấy video giãn cơ trong thư mục raw."
+        android:textColor="#92400E"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvStretchTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:text="Còn lại: 30 giây"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+</LinearLayout>

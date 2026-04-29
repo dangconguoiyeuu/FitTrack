@@ -6,12 +6,15 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.ToneGenerator;
 import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +24,13 @@ import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.models.WorkoutSession;
 import com.fitness.fittrack.services.ForegroundService;
 import com.fitness.fittrack.utils.FirebaseHelper;
+import com.fitness.fittrack.utils.StreakHelper;
+import com.fitness.fittrack.utils.StretchCatalog;
+import com.fitness.fittrack.utils.VoiceCounter;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.ui.PlayerView;
 
 public class ExerciseActivity extends AppCompatActivity implements SensorEventListener {
     // ... Khai báo các biến UI và Logic ...
@@ -82,6 +92,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private long lastPushTime = 0;
     private boolean isLying = true;
     private long lastSitupTime = 0;
+    private VoiceCounter voiceCounter;
+    private ExoPlayer stretchPlayer;
+    private CountDownTimer stretchTimer;
     private ToneGenerator tone;
     private Vibrator vibrator;
     private ImageView ivExerciseIcon;
@@ -106,6 +119,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tvStatus = findViewById(R.id.tvStatus);
 
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
+        voiceCounter = new VoiceCounter(this);
         tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
@@ -176,14 +190,15 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tvStatus.setText("Nhịp hợp lệ!");
 
         // Phát âm thanh Beep ngắn báo hiệu đã đếm thành công
-        try {
-            tone.startTone(ToneGenerator.TONE_PROP_BEEP, 100);
-        } catch (Exception e) {}
+        if (!"running".equals(type)) {
+            boolean spoken = voiceCounter != null && voiceCounter.speakCount(type, count);
+            if (!spoken) playRepBeep();
+        }
 
         // Kiểm tra xem đã hoàn thành số Reps của Set hiện tại chưa
         if (count >= target) {
             if (currentSet >= sets) {
-                finishExercise(); // Hoàn thành toàn bộ các Set
+                finishExercise(true);
             } else {
                 playRestSound();
                 showRestDialog();
@@ -281,6 +296,10 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
     // --- Hàm kết thúc bài tập: Hủy các tiến trình chạy ngầm, tính Calo cuối cùng và lưu kết quả lên Firebase ---
     private void finishExercise() {
+        finishExercise(false);
+    }
+
+    private void finishExercise(boolean showPostWorkoutStretch) {
         active = false;
         sm.unregisterListener(this);
         handler.removeCallbacks(ticker);
@@ -295,17 +314,36 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         double calo = User.estimateCalories(type, totalCount, elapsed, userWeight);
         double dist = "running".equals(type) ? Math.round(totalCount * 0.7 / 1000.0 * 100.0) / 100.0 : 0;
 
+        if (showPostWorkoutStretch) {
+            Intent stretchIntent = new Intent(this, PostWorkoutStretchActivity.class);
+            stretchIntent.putExtra(PostWorkoutStretchActivity.EXTRA_TYPE, type);
+            stretchIntent.putExtra(PostWorkoutStretchActivity.EXTRA_COUNT, totalCount);
+            stretchIntent.putExtra(PostWorkoutStretchActivity.EXTRA_TARGET, target);
+            stretchIntent.putExtra(PostWorkoutStretchActivity.EXTRA_DISTANCE, dist);
+            stretchIntent.putExtra(PostWorkoutStretchActivity.EXTRA_CALORIES, calo);
+            stretchIntent.putExtra(PostWorkoutStretchActivity.EXTRA_DURATION, elapsed);
+            startActivity(stretchIntent);
+            finish();
+            return;
+        }
+
         // Lưu dữ liệu phiên tập vào Firestore để xem lại trong màn hình Lịch sử
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid != null && totalCount > 0) {
             // TRUYỀN totalCount VÀO ĐÂY để lưu tổng số rep của cả buổi tập
             WorkoutSession s = new WorkoutSession(uid, type, totalCount, target, dist, calo, elapsed);
             FirebaseHelper.getInstance().saveWorkout(s, t -> {
+                if (t.isSuccessful()) {
+                    StreakHelper.updateAfterWorkout(uid, null);
+                }
                 Toast.makeText(getApplicationContext(), t.isSuccessful() ? "Đã lưu kết quả!" : "Lỗi lưu dữ liệu!", Toast.LENGTH_SHORT).show();
             });
         }
 
         tvStatus.setText("Hoàn thành! Tổng: " + totalCount + " | " + (int) calo + " kcal");
+        if (showPostWorkoutStretch) {
+            startActivity(new Intent(this, PostWorkoutStretchActivity.class));
+        }
         finish();
     }
 
@@ -331,6 +369,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (voiceCounter != null) voiceCounter.shutdown();
         if (tone != null) tone.release();
         handler.removeCallbacksAndMessages(null);
 
@@ -354,6 +393,11 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
                 .setNegativeButton("Tập tiếp", null)
                 .show();
     }
+    private void playRepBeep() {
+        try {
+            if (tone != null) tone.startTone(ToneGenerator.TONE_PROP_BEEP, 100);
+        } catch (Exception ignored) {}
+    }
     private void playSuccessSound() {
         try {
             android.media.MediaPlayer mp = android.media.MediaPlayer.create(this, R.raw.success_sound);
@@ -373,6 +417,99 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             e.printStackTrace();
         }
     }
+    private void showStretchDialog() {
+        active = false;
+        sm.unregisterListener(this);
+        handler.removeCallbacks(ticker);
+        handler.removeCallbacks(inactivityCheck);
+
+        StretchCatalog.StretchMove stretchMove = StretchCatalog.forSet(type, currentSet);
+        View view = getLayoutInflater().inflate(R.layout.dialog_stretch_video, null);
+        TextView tvStretchTitle = view.findViewById(R.id.tvStretchTitle);
+        TextView tvStretchInstruction = view.findViewById(R.id.tvStretchInstruction);
+        TextView tvStretchTimer = view.findViewById(R.id.tvStretchTimer);
+        TextView tvStretchVideoFallback = view.findViewById(R.id.tvStretchVideoFallback);
+        PlayerView playerView = view.findViewById(R.id.playerStretch);
+
+        tvStretchTitle.setText(stretchMove.getTitle());
+        tvStretchInstruction.setText(stretchMove.getInstruction());
+        tvStretchTimer.setText("Còn lại: " + stretchMove.getDurationSeconds() + " giây");
+        playStretchVideo(playerView, tvStretchVideoFallback);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Giãn cơ trước hiệp " + (currentSet + 1))
+                .setView(view)
+                .setCancelable(false)
+                .setPositiveButton("Tập tiếp ngay", null)
+                .create();
+        dialog.setOnDismissListener(d -> releaseStretchPlayer());
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (stretchTimer != null) {
+                stretchTimer.cancel();
+                stretchTimer = null;
+            }
+            dialog.dismiss();
+            startNextSet();
+        });
+
+        stretchTimer = new CountDownTimer(stretchMove.getDurationSeconds() * 1000L, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (dialog.isShowing()) {
+                    int secondsLeft = (int) (millisUntilFinished / 1000);
+                    tvStretchTimer.setText("Còn lại: " + secondsLeft + " giây");
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                stretchTimer = null;
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                    startNextSet();
+                }
+            }
+        }.start();
+    }
+
+    private void playStretchVideo(PlayerView playerView, TextView fallbackView) {
+        int videoResId = resolveStretchVideoResource();
+        if (videoResId == 0) {
+            playerView.setVisibility(View.GONE);
+            fallbackView.setVisibility(View.VISIBLE);
+            fallbackView.setText("Chưa tìm thấy video giãn cơ. Thêm stretch_rest.mp4 hoặc stretch_" + type + ".mp4 vào thư mục res/raw.");
+            return;
+        }
+
+        fallbackView.setVisibility(View.GONE);
+        playerView.setVisibility(View.VISIBLE);
+        releaseStretchPlayer();
+        stretchPlayer = new ExoPlayer.Builder(this).build();
+        playerView.setPlayer(stretchPlayer);
+        stretchPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+
+        String path = "android.resource://" + getPackageName() + "/" + videoResId;
+        stretchPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(path)));
+        stretchPlayer.prepare();
+        stretchPlayer.play();
+    }
+
+    private int resolveStretchVideoResource() {
+        String suffix = type != null ? type : "rest";
+        int typeVideo = getResources().getIdentifier("stretch_" + suffix, "raw", getPackageName());
+        if (typeVideo != 0) return typeVideo;
+        return getResources().getIdentifier("stretch_rest", "raw", getPackageName());
+    }
+
+    private void releaseStretchPlayer() {
+        if (stretchPlayer != null) {
+            stretchPlayer.release();
+            stretchPlayer = null;
+        }
+    }
+
     private void showRestDialog() {
         active = false;
         sm.unregisterListener(this);
@@ -425,6 +562,7 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         if (sensor != null) sm.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
         lastRepTime = SystemClock.elapsedRealtime();
         handler.postDelayed(ticker, 0);
+        handler.postDelayed(inactivityCheck, 20000);
 
         Toast.makeText(this, "Bắt đầu hiệp " + currentSet + "!", Toast.LENGTH_SHORT).show();
     }
