@@ -50,6 +50,35 @@ public final class StreakHelper {
             if (listener != null) listener.onComplete(false, 0);
         });
     }
+    public static void checkAndResetStreakIfNeeded(String uid, Listener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(uid);
+        LocalDate today = LocalDate.now();
+
+        db.runTransaction(transaction -> {
+            var snapshot = transaction.get(userRef);
+            String lastDateStr = snapshot.getString("lastWorkoutDate");
+            Long currentStreakVal = snapshot.getLong("streakDays");
+            int currentStreak = currentStreakVal != null ? currentStreakVal.intValue() : 0;
+
+            if (lastDateStr != null && !lastDateStr.trim().isEmpty() && currentStreak > 0) {
+                try {
+                    LocalDate lastWorkout = LocalDate.parse(lastDateStr);
+                    // Nếu ngày cuối cùng tập KHÔNG PHẢI HÔM NAY và cũng KHÔNG PHẢI HÔM QUA
+                    // => Chắc chắn là đã bỏ lỡ => Reset về 0
+                    if (!lastWorkout.isEqual(today) && !lastWorkout.isEqual(today.minusDays(1))) {
+                        transaction.update(userRef, "streakDays", 0);
+                        return 0; // Trả về 0 để báo hiệu đã reset
+                    }
+                } catch (Exception ignored) {}
+            }
+            return currentStreak; // Giữ nguyên chuỗi nếu vẫn hợp lệ
+        }).addOnSuccessListener(streak -> {
+            if (listener != null) listener.onComplete(true, streak);
+        }).addOnFailureListener(e -> {
+            if (listener != null) listener.onComplete(false, 0);
+        });
+    }
 
     private static boolean isYesterday(String dateValue, LocalDate today) {
         if (dateValue == null || dateValue.trim().isEmpty()) return false;

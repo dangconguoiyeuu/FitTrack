@@ -70,6 +70,8 @@ public class PostWorkoutStretchActivity extends AppCompatActivity {
         if (saving) return;
         saving = true;
 
+        releasePlayer();
+
         String uid = FirebaseHelper.getInstance().getUid();
         int count = getIntent().getIntExtra(EXTRA_COUNT, 0);
         if (uid == null || count <= 0) {

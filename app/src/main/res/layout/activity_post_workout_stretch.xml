@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Đây là phần bổ trợ sau buổi tập. Video sẽ phát lặp lại, còn dữ liệu tập luyện chỉ được lưu khi bạn bấm Kết thúc tập."
+        android:text="Đây là phần bổ trợ sau buổi tập. Mỗi động tác nên làm 15s mỗi bên."
         android:textColor="#666666"
         android:textSize="13sp" />
 

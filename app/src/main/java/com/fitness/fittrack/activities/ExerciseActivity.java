@@ -25,8 +25,6 @@ import com.fitness.fittrack.models.WorkoutSession;
 import com.fitness.fittrack.services.ForegroundService;
 import com.fitness.fittrack.utils.FirebaseHelper;
 import com.fitness.fittrack.utils.StreakHelper;
-import com.fitness.fittrack.utils.StretchCatalog;
-import com.fitness.fittrack.utils.VoiceCounter;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
@@ -92,7 +90,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     private long lastPushTime = 0;
     private boolean isLying = true;
     private long lastSitupTime = 0;
-    private VoiceCounter voiceCounter;
     private ExoPlayer stretchPlayer;
     private CountDownTimer stretchTimer;
     private ToneGenerator tone;
@@ -119,7 +116,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tvStatus = findViewById(R.id.tvStatus);
 
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
-        voiceCounter = new VoiceCounter(this);
         tone = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
@@ -189,10 +185,9 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         tvCount.setText(String.valueOf(count));
         tvStatus.setText("Nhịp hợp lệ!");
 
-        // Phát âm thanh Beep ngắn báo hiệu đã đếm thành công
+        // Phát tiếng Beep ngắn báo hiệu đã đếm thành công
         if (!"running".equals(type)) {
-            boolean spoken = voiceCounter != null && voiceCounter.speakCount(type, count);
-            if (!spoken) playRepBeep();
+            playRepBeep();
         }
 
         // Kiểm tra xem đã hoàn thành số Reps của Set hiện tại chưa
@@ -369,7 +364,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (voiceCounter != null) voiceCounter.shutdown();
         if (tone != null) tone.release();
         handler.removeCallbacksAndMessages(null);
 
@@ -415,98 +409,6 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             mp.start();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-    private void showStretchDialog() {
-        active = false;
-        sm.unregisterListener(this);
-        handler.removeCallbacks(ticker);
-        handler.removeCallbacks(inactivityCheck);
-
-        StretchCatalog.StretchMove stretchMove = StretchCatalog.forSet(type, currentSet);
-        View view = getLayoutInflater().inflate(R.layout.dialog_stretch_video, null);
-        TextView tvStretchTitle = view.findViewById(R.id.tvStretchTitle);
-        TextView tvStretchInstruction = view.findViewById(R.id.tvStretchInstruction);
-        TextView tvStretchTimer = view.findViewById(R.id.tvStretchTimer);
-        TextView tvStretchVideoFallback = view.findViewById(R.id.tvStretchVideoFallback);
-        PlayerView playerView = view.findViewById(R.id.playerStretch);
-
-        tvStretchTitle.setText(stretchMove.getTitle());
-        tvStretchInstruction.setText(stretchMove.getInstruction());
-        tvStretchTimer.setText("Còn lại: " + stretchMove.getDurationSeconds() + " giây");
-        playStretchVideo(playerView, tvStretchVideoFallback);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Giãn cơ trước hiệp " + (currentSet + 1))
-                .setView(view)
-                .setCancelable(false)
-                .setPositiveButton("Tập tiếp ngay", null)
-                .create();
-        dialog.setOnDismissListener(d -> releaseStretchPlayer());
-        dialog.show();
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            if (stretchTimer != null) {
-                stretchTimer.cancel();
-                stretchTimer = null;
-            }
-            dialog.dismiss();
-            startNextSet();
-        });
-
-        stretchTimer = new CountDownTimer(stretchMove.getDurationSeconds() * 1000L, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                if (dialog.isShowing()) {
-                    int secondsLeft = (int) (millisUntilFinished / 1000);
-                    tvStretchTimer.setText("Còn lại: " + secondsLeft + " giây");
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                stretchTimer = null;
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                    startNextSet();
-                }
-            }
-        }.start();
-    }
-
-    private void playStretchVideo(PlayerView playerView, TextView fallbackView) {
-        int videoResId = resolveStretchVideoResource();
-        if (videoResId == 0) {
-            playerView.setVisibility(View.GONE);
-            fallbackView.setVisibility(View.VISIBLE);
-            fallbackView.setText("Chưa tìm thấy video giãn cơ. Thêm stretch_rest.mp4 hoặc stretch_" + type + ".mp4 vào thư mục res/raw.");
-            return;
-        }
-
-        fallbackView.setVisibility(View.GONE);
-        playerView.setVisibility(View.VISIBLE);
-        releaseStretchPlayer();
-        stretchPlayer = new ExoPlayer.Builder(this).build();
-        playerView.setPlayer(stretchPlayer);
-        stretchPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-
-        String path = "android.resource://" + getPackageName() + "/" + videoResId;
-        stretchPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(path)));
-        stretchPlayer.prepare();
-        stretchPlayer.play();
-    }
-
-    private int resolveStretchVideoResource() {
-        String suffix = type != null ? type : "rest";
-        int typeVideo = getResources().getIdentifier("stretch_" + suffix, "raw", getPackageName());
-        if (typeVideo != 0) return typeVideo;
-        return getResources().getIdentifier("stretch_rest", "raw", getPackageName());
-    }
-
-    private void releaseStretchPlayer() {
-        if (stretchPlayer != null) {
-            stretchPlayer.release();
-            stretchPlayer = null;
         }
     }
 

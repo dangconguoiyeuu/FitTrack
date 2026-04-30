@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fitness.fittrack.R;
 import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.utils.FirebaseHelper;
+import com.fitness.fittrack.utils.StreakHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -55,20 +56,39 @@ public class HomeActivity extends AppCompatActivity {
 
         findViewById(R.id.btnReminder).setOnClickListener(v ->
                 startActivity(new Intent(this, ReminderActivity.class)));
-
-        findViewById(R.id.btnDemoStreak).setOnClickListener(v -> seedDemoStreak(7));
+        ;
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
             FirebaseHelper.getInstance().signOut();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
+        String uid = FirebaseHelper.getInstance().getUid();
+        if (uid != null) {
+            java.util.Map<String, Object> manualStreak = new java.util.HashMap<>();
+            manualStreak.put("streakDays", 5);
+            manualStreak.put("bestStreakDays", 5);
+            // Giả sử hôm qua bạn vừa tập xong để hệ thống hiểu chuỗi đang tiếp diễn
+            manualStreak.put("lastWorkoutDate", java.time.LocalDate.now().minusDays(1).toString());
+
+            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("users").document(uid)
+                    .set(manualStreak, com.google.firebase.firestore.SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> android.util.Log.d("FitTrack", "Đã ép streak lên 5 thành công!"));
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadProfile();
+        String uid = FirebaseHelper.getInstance().getUid();
+        if (uid != null) {
+            // Bước 1: Kiểm tra xem có bị mất chuỗi do bỏ tập hôm qua không
+            StreakHelper.checkAndResetStreakIfNeeded(uid, (success, currentStreak) -> {
+                // Bước 2: Dù kết quả thế nào cũng tải lại Profile để hiển thị mới nhất
+                loadProfile();
+            });
+        }
     }
 
     private void loadProfile() {
@@ -115,30 +135,6 @@ public class HomeActivity extends AppCompatActivity {
         ivFlame.startAnimation(createFlameAnimation());
     }
 
-    private void seedDemoStreak(int days) {
-        String uid = FirebaseHelper.getInstance().getUid();
-        if (uid == null) {
-            Toast.makeText(this, "Bạn cần đăng nhập trước.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("streakDays", days);
-        data.put("bestStreakDays", days);
-        data.put("lastWorkoutDate", LocalDate.now().toString());
-
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(uid)
-                .set(data, SetOptions.merge())
-                .addOnSuccessListener(unused -> {
-                    updateStreak(days);
-                    Toast.makeText(this, "Đã tạo dữ liệu demo " + days + " ngày liên tiếp.", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Không thể tạo dữ liệu demo.", Toast.LENGTH_SHORT).show());
-    }
-
     private Animation createFlameAnimation() {
         ScaleAnimation scale = new ScaleAnimation(
                 0.92f, 1.08f,
@@ -159,4 +155,6 @@ public class HomeActivity extends AppCompatActivity {
         set.setDuration(650);
         return set;
     }
+
 }
+

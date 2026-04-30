@@ -187,18 +187,6 @@
                 app:cornerRadius="12dp" />
 
             <Button
-                android:id="@+id/btnDemoStreak"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Xem thử chuỗi 7 ngày"
-                android:textColor="#92400E"
-                android:backgroundTint="#FFF7ED"
-                android:layout_marginBottom="12dp"
-                android:elevation="1dp"
-                android:textAllCaps="false"
-                app:cornerRadius="12dp" />
-
-            <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
