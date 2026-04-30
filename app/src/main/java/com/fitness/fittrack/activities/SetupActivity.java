@@ -55,7 +55,7 @@ public class SetupActivity extends AppCompatActivity {
         tvNote = findViewById(R.id.tvNote);
 
         layoutReps = (View) tvReps.getParent();
-        layoutSets = (View) tvSets.getParent();
+        layoutSets = (View) findViewById(R.id.btnSetsMinus).getParent();
 
         cardRun.setOnClickListener(v -> selectType("running"));
         cardPush.setOnClickListener(v -> selectType("pushup"));
@@ -63,8 +63,17 @@ public class SetupActivity extends AppCompatActivity {
 
         findViewById(R.id.btnRepsMinus).setOnClickListener(v -> { if (reps > 5) reps -= 5; upd(); });
         findViewById(R.id.btnRepsPlus).setOnClickListener(v -> { reps += 5; upd(); });
-        findViewById(R.id.btnSetsMinus).setOnClickListener(v -> { if (sets > 1) sets--; upd(); });
-        findViewById(R.id.btnSetsPlus).setOnClickListener(v -> { sets++; upd(); });
+        findViewById(R.id.btnSetsMinus).setOnClickListener(v -> {
+            if ("running".equals(selectedType)) return; // Khóa chức năng nếu là chạy bộ
+            if (sets > 1) sets--;
+            upd();
+        });
+
+        findViewById(R.id.btnSetsPlus).setOnClickListener(v -> {
+            if ("running".equals(selectedType)) return; // Khóa chức năng nếu là chạy bộ
+            sets++;
+            upd();
+        });
 
         layoutReps.setOnClickListener(v -> showNumberPickerDialog(true));
         layoutSets.setOnClickListener(v -> showNumberPickerDialog(false));

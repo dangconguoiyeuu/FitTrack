@@ -63,19 +63,6 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
-        String uid = FirebaseHelper.getInstance().getUid();
-        if (uid != null) {
-            java.util.Map<String, Object> manualStreak = new java.util.HashMap<>();
-            manualStreak.put("streakDays", 5);
-            manualStreak.put("bestStreakDays", 5);
-            // Giả sử hôm qua bạn vừa tập xong để hệ thống hiểu chuỗi đang tiếp diễn
-            manualStreak.put("lastWorkoutDate", java.time.LocalDate.now().minusDays(1).toString());
-
-            com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                    .collection("users").document(uid)
-                    .set(manualStreak, com.google.firebase.firestore.SetOptions.merge())
-                    .addOnSuccessListener(aVoid -> android.util.Log.d("FitTrack", "Đã ép streak lên 5 thành công!"));
-        }
     }
 
     @Override

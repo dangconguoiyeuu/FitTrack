@@ -51,10 +51,11 @@
     </LinearLayout>
 
     <ProgressBar
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="64dp"
-        android:indeterminateTint="#00B894"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/custom_spinner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

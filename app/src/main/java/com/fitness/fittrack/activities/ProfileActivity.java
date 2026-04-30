@@ -57,20 +57,35 @@ public class ProfileActivity extends AppCompatActivity {
         if(w<10||w>500){etW.setError("10-500 kg");return;}
         if(age<5||age>120){etA.setError("5-120");return;}
 
-        User u = new User();
-        u.setUid(FirebaseHelper.getInstance().getUid());
-        u.setEmail(FirebaseHelper.getInstance().getCurrentUser().getEmail());
-        u.setName(name); u.setAge(age); u.setHeight(h); u.setWeight(w);
-        u.setGender(spG.getSelectedItem().toString());
-        u.setFitnessLevel(spF.getSelectedItem().toString());
-        u.setBmi(u.calculateBMI());
+        // TÍNH TOÁN BMI
+        double rawBmi = w / ((h / 100) * (h / 100));
+        final double finalBmi = Math.round(rawBmi * 10.0) / 10.0;
 
-        FirebaseHelper.getInstance().saveProfile(u, t -> {
-            if(t.isSuccessful()) {
-                Intent i = new Intent(this, BmiResultActivity.class);
-                i.putExtra("bmi", u.getBmi()); i.putExtra("weight", w);
-                startActivity(i); finish();
-            } else Toast.makeText(this,"Loi luu!",Toast.LENGTH_SHORT).show();
-        });
+        String uid = FirebaseHelper.getInstance().getUid();
+        if (uid == null) return;
+
+        // DÙNG MAP ĐỂ CHỈ GHI ĐÈ THÔNG TIN HỒ SƠ, BẢO TOÀN STREAK
+        java.util.Map<String, Object> updates = new java.util.HashMap<>();
+        updates.put("name", name);
+        updates.put("age", age);
+        updates.put("height", h);
+        updates.put("weight", w);
+        updates.put("gender", spG.getSelectedItem().toString());
+        updates.put("fitnessLevel", spF.getSelectedItem().toString());
+        updates.put("bmi", finalBmi);
+
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("users").document(uid)
+                .set(updates, com.google.firebase.firestore.SetOptions.merge())
+                .addOnCompleteListener(t -> {
+                    if(t.isSuccessful()) {
+                        Intent i = new Intent(this, BmiResultActivity.class);
+                        i.putExtra("bmi", finalBmi);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        Toast.makeText(this,"Lỗi lưu!",Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
