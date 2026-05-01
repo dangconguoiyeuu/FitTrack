@@ -37,6 +37,7 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
         <activity android:name=".activities.HistoryActivity" />
+        <activity android:name=".activities.StatisticsActivity" />
         <receiver
             android:name=".receivers.ReminderReceiver"
             android:exported="false" />

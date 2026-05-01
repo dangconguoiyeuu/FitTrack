@@ -56,7 +56,9 @@ public class HomeActivity extends AppCompatActivity {
 
         findViewById(R.id.btnReminder).setOnClickListener(v ->
                 startActivity(new Intent(this, ReminderActivity.class)));
-        ;
+
+        findViewById(R.id.btnStatistics).setOnClickListener(v ->
+                startActivity(new Intent(this, StatisticsActivity.class)));
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
             FirebaseHelper.getInstance().signOut();
