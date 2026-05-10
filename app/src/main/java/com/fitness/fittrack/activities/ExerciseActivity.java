@@ -233,22 +233,16 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
 
             case "situp":
                 if (e.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
-
                 // Lấy độ nghiêng trục Z (Màn hình điện thoại so với mặt đất)
                 float zVal = Math.abs(e.values[2]);
-
                 // BƯỚC 1: Phát hiện khi ông đã gập người lên (Z giảm xuống)
                 // Ngưỡng 5.5f là đủ nhạy để nhận diện cú gập kể cả khi tay để sau đầu
                 if (zVal < 5.5f) {
                     isLying = false; // Đã rời khỏi tư thế nằm
                 }
 
-                // BƯỚC 2: Phát hiện khi ông đã nằm xuống lại (Z tăng lên)
                 else if (!isLying && zVal > 8.0f) {
                     long now = SystemClock.elapsedRealtime();
-
-                    // CHẶN ĐẾM KÉP: Chỉ tính nhịp nếu cách lần trước ít nhất 1.2 giây
-                    // Đây là cách fix lỗi đếm 2 lần mà ông gặp phải
                     if (now - lastSitupTime > 1800) {
                         onValidRep();
                         lastSitupTime = now;

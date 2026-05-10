@@ -56,7 +56,6 @@ public class StatisticsActivity extends AppCompatActivity {
         barDataSet.setColors(com.github.mikephil.charting.utils.ColorTemplate.MATERIAL_COLORS);
         barDataSet.setValueTextSize(13f);
         barDataSet.setValueTextColor(android.graphics.Color.BLACK);
-
         BarData barData = new BarData(barDataSet);
         barChart.setData(barData);
 
@@ -76,7 +75,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
         barChart.getAxisRight().setEnabled(false); // Ẩn trục bên phải cho đỡ rối
         barChart.getDescription().setEnabled(false); // Xóa chữ Description Label
-
         barChart.animateY(1000);
         barChart.invalidate();
 
