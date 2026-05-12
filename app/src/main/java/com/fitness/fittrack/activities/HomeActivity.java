@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fitness.fittrack.R;
 import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.utils.FirebaseHelper;
+import com.fitness.fittrack.utils.OfflineAuthHelper;
 import com.fitness.fittrack.utils.StreakHelper;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -60,6 +61,9 @@ public class HomeActivity extends AppCompatActivity {
         findViewById(R.id.btnStatistics).setOnClickListener(v ->
                 startActivity(new Intent(this, StatisticsActivity.class)));
 
+        findViewById(R.id.btnUsageHistory).setOnClickListener(v ->
+                startActivity(new Intent(this, UsageHistoryActivity.class)));
+
         findViewById(R.id.btnLogout).setOnClickListener(v -> {
             FirebaseHelper.getInstance().signOut();
             startActivity(new Intent(this, LoginActivity.class));
@@ -83,6 +87,11 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (FirebaseHelper.getInstance().isOfflineSession()) {
+            loadProfile();
+            return;
+        }
+
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid != null) {
             // Bước 1: Kiểm tra xem có bị mất chuỗi do bỏ tập hôm qua không
@@ -94,6 +103,30 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void loadProfile() {
+        if (FirebaseHelper.getInstance().isOfflineSession()) {
+            User user = OfflineAuthHelper.getInstance(this).getCurrentUserProfile();
+            if (user == null) {
+                tvW.setText("Xin chào!");
+                tvB.setText("");
+                tvS.setText("");
+                updateStreak(0);
+                return;
+            }
+
+            tvW.setText("Xin chào, " + (user.getName() != null ? user.getName() : "") + "!");
+            updateStreak(0);
+
+            double bmi = user.getBmi();
+            if (bmi > 0) {
+                tvB.setText("BMI: " + bmi + " - " + User.getBMICategory(bmi));
+                tvS.setText(User.getSuggestion(bmi));
+            } else {
+                tvB.setText("Chưa tính BMI");
+                tvS.setText("Vào Hồ sơ để cập nhật");
+            }
+            return;
+        }
+
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid == null) return;
 
@@ -159,4 +192,3 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 }
-

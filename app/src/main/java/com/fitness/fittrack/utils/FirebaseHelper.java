@@ -1,5 +1,8 @@
 package com.fitness.fittrack.utils;
 
+import android.content.Context;
+
+import com.fitness.fittrack.FitTrackApplication;
 import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.models.WorkoutSession;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,11 +34,43 @@ public class FirebaseHelper {
 
     public FirebaseAuth getAuth() { return auth; }
     public FirebaseUser getCurrentUser() { return auth.getCurrentUser(); }
+
+    // Ham lay uid hien tai, uu tien Firebase va fallback sang tai khoan offline neu Firebase khong dang nhap.
     public String getUid() {
         FirebaseUser u = auth.getCurrentUser();
-        return u != null ? u.getUid() : null;
+        if (u != null) return u.getUid();
+
+        OfflineAuthHelper offlineAuth = getOfflineAuth();
+        return offlineAuth != null ? offlineAuth.getCurrentUid() : null;
     }
-    public void signOut() { auth.signOut(); }
+
+    // Ham kiem tra app dang dung phien dang nhap offline hay khong.
+    public boolean isOfflineSession() {
+        OfflineAuthHelper offlineAuth = getOfflineAuth();
+        return auth.getCurrentUser() == null && offlineAuth != null && offlineAuth.isLoggedIn();
+    }
+
+    // Ham lay email hien tai tu Firebase hoac tu phien dang nhap offline.
+    public String getCurrentEmail() {
+        FirebaseUser u = auth.getCurrentUser();
+        if (u != null) return u.getEmail();
+
+        OfflineAuthHelper offlineAuth = getOfflineAuth();
+        return offlineAuth != null ? offlineAuth.getCurrentEmail() : null;
+    }
+
+    // Ham dang xuat ca Firebase va phien offline de nut Dang xuat xu ly dung moi truong hop.
+    public void signOut() {
+        auth.signOut();
+        OfflineAuthHelper offlineAuth = getOfflineAuth();
+        if (offlineAuth != null) offlineAuth.signOut();
+    }
+
+    // Ham lay OfflineAuthHelper bang application context, tranh yeu cau Activity tai cac lop dung chung.
+    private OfflineAuthHelper getOfflineAuth() {
+        Context context = FitTrackApplication.getAppContext();
+        return context != null ? OfflineAuthHelper.getInstance(context) : null;
+    }
 
     // ===== USER PROFILE =====
     public void saveProfile(User user, OnCompleteListener<Void> l) {

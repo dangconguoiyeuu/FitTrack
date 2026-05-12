@@ -79,6 +79,12 @@ public class PostWorkoutStretchActivity extends AppCompatActivity {
             return;
         }
 
+        if (FirebaseHelper.getInstance().isOfflineSession()) {
+            Toast.makeText(getApplicationContext(), "Đã hoàn thành buổi tập offline!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         String type = getIntent().getStringExtra(EXTRA_TYPE);
         int target = getIntent().getIntExtra(EXTRA_TARGET, 0);
         double distance = getIntent().getDoubleExtra(EXTRA_DISTANCE, 0);

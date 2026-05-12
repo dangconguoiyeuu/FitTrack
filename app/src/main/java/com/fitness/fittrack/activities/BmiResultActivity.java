@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fitness.fittrack.R;
 import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.utils.FirebaseHelper;
+import com.fitness.fittrack.utils.OfflineAuthHelper;
 
 public class BmiResultActivity extends AppCompatActivity {
     // Chỉ giữ lại tSet nếu bạn muốn dùng ở nhiều hàm khác nhau,
@@ -42,6 +43,15 @@ public class BmiResultActivity extends AppCompatActivity {
 
         // 5. Lưu mục tiêu vào Firebase
         findViewById(R.id.btnConfirm).setOnClickListener(v -> {
+            if (FirebaseHelper.getInstance().isOfflineSession()) {
+                boolean saved = OfflineAuthHelper.getInstance(this).saveTargets(tP, tS, tSet, tR);
+                Toast.makeText(this,
+                        saved ? "Lộ trình 10 ngày đã lưu offline!" : "Lỗi lưu lộ trình offline!",
+                        Toast.LENGTH_SHORT).show();
+                if (saved) finish();
+                return;
+            }
+
             String uid = FirebaseHelper.getInstance().getUid();
             if (uid != null) {
                 java.util.Map<String, Object> m = new java.util.HashMap<>();

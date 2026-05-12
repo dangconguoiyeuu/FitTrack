@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.fitness.fittrack.R;
 import com.fitness.fittrack.utils.FirebaseHelper;
+import com.fitness.fittrack.utils.OfflineAuthHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
@@ -93,6 +94,17 @@ public class SetupActivity extends AppCompatActivity {
     }
 
     private void loadFirebaseData() {
+        if (FirebaseHelper.getInstance().isOfflineSession()) {
+            int[] targets = OfflineAuthHelper.getInstance(this)
+                    .getTargets(targetPushup, targetSitup, targetSets, targetRunning);
+            targetPushup = targets[0];
+            targetSitup = targets[1];
+            targetSets = targets[2];
+            targetRunning = targets[3];
+            selectType(selectedType);
+            return;
+        }
+
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid == null) return;
 

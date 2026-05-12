@@ -24,6 +24,7 @@ import com.fitness.fittrack.models.User;
 import com.fitness.fittrack.models.WorkoutSession;
 import com.fitness.fittrack.services.ForegroundService;
 import com.fitness.fittrack.utils.FirebaseHelper;
+import com.fitness.fittrack.utils.OfflineAuthHelper;
 import com.fitness.fittrack.utils.StreakHelper;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -149,15 +150,20 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
             Toast.makeText(this, "Cảm biến không khả dụng trên thiết bị này!", Toast.LENGTH_LONG).show();
         }
 
-        // Lấy cân nặng người dùng từ Firebase để tính Calo chính xác nhất
-        String uid = FirebaseHelper.getInstance().getUid();
-        if (uid != null) {
-            FirebaseHelper.getInstance().getProfile(uid, t -> {
-                if (t.isSuccessful() && t.getResult().exists()) {
-                    Double w = t.getResult().getDouble("weight");
-                    if (w != null && w > 0) userWeight = w;
-                }
-            });
+        // Lấy cân nặng người dùng từ Firebase hoặc tài khoản offline để tính Calo chính xác nhất
+        if (FirebaseHelper.getInstance().isOfflineSession()) {
+            User offlineUser = OfflineAuthHelper.getInstance(this).getCurrentUserProfile();
+            if (offlineUser != null && offlineUser.getWeight() > 0) userWeight = offlineUser.getWeight();
+        } else {
+            String uid = FirebaseHelper.getInstance().getUid();
+            if (uid != null) {
+                FirebaseHelper.getInstance().getProfile(uid, t -> {
+                    if (t.isSuccessful() && t.getResult().exists()) {
+                        Double w = t.getResult().getDouble("weight");
+                        if (w != null && w > 0) userWeight = w;
+                    }
+                });
+            }
         }
 
         startExercise();
@@ -317,6 +323,12 @@ public class ExerciseActivity extends AppCompatActivity implements SensorEventLi
         }
 
         // Lưu dữ liệu phiên tập vào Firestore để xem lại trong màn hình Lịch sử
+        if (FirebaseHelper.getInstance().isOfflineSession()) {
+            Toast.makeText(getApplicationContext(), "Đã hoàn thành buổi tập offline!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         String uid = FirebaseHelper.getInstance().getUid();
         if (uid != null && totalCount > 0) {
             // TRUYỀN totalCount VÀO ĐÂY để lưu tổng số rep của cả buổi tập
